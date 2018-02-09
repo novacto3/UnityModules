@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -56,23 +56,17 @@ namespace Leap.Unity {
       return false;
     }
 
-    public HandPool.ModelGroup group;
+    [NonSerialized]
+    public HandModelManager.ModelGroup group;
 
 #if UNITY_EDITOR
     void Update() {
       if (!EditorApplication.isPlaying && SupportsEditorPersistence()) {
-        Transform editorPoseSpace;
-        LeapServiceProvider leapServiceProvider = FindObjectOfType<LeapServiceProvider>();
-        LeapTransform poseTransform = LeapTransform.Identity;
-        if (leapServiceProvider != null) {
-          editorPoseSpace = leapServiceProvider.transform;
-          poseTransform = TestHandFactory.GetTestPoseLeftHandTransform(leapServiceProvider.editTimePose);
-        } else {
-          editorPoseSpace = transform;
+        Hand hand = Handedness == Chirality.Left ? Hands.Left : Hands.Right;
+        if (hand == null) {
+          hand = TestHandFactory.MakeTestHand(Handedness == Chirality.Left, unitType: TestHandFactory.UnitType.LeapUnits);
+          hand.Transform(transform.GetLeapMatrix());
         }
-
-        Hand hand = TestHandFactory.MakeTestHand(Handedness == Chirality.Left, poseTransform).TransformedCopy(UnityMatrixExtension.GetLeapMatrix(editorPoseSpace));
-        //Hand hand = TestHandFactory.MakeTestHand(0, 0, Handedness == Chirality.Left).TransformedCopy(UnityMatrixExtension.GetLeapMatrix(editorPoseSpace));
 
         if (GetLeapHand() == null) {
           SetLeapHand(hand);

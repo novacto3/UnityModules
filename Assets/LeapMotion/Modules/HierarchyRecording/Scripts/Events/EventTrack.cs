@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -19,20 +19,12 @@ namespace Leap.Unity.Recording {
   [TrackClipType(typeof(EventClip))]
   public class EventTrack : TrackAsset {
 
-    private PlayableDirector _director = null;
-
     public override Playable CreateTrackMixer(PlayableGraph graph, GameObject go, int inputCount) {
       var eventMixerPlayable = ScriptPlayable<EventPlayableMixerBehaviour>.Create(graph, inputCount);
-      eventMixerPlayable.GetBehaviour().director = _director;
+      
       eventMixerPlayable.GetBehaviour().eventTrack = this;
 
       return eventMixerPlayable;
-    }
-
-    public override void GatherProperties(PlayableDirector director, IPropertyCollector driver) {
-      base.GatherProperties(director, driver);
-
-      _director = director;
     }
 
   }

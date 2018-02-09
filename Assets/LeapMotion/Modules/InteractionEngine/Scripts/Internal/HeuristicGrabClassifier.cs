@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -202,6 +202,27 @@ namespace Leap.Unity.Interaction.Internal {
 
       return updateBehaviour(intObj, hand, GraspUpdateMode.BeginGrasp,
                              ignoreTemporal: true);
+    }
+
+    public void SwapClassifierState(IInteractionBehaviour original, IInteractionBehaviour replacement) {
+      if (original == null) {
+        throw new ArgumentNullException("original");
+      }
+
+      if (replacement == null) {
+        throw new ArgumentNullException("replacement");
+      }
+
+      GrabClassifierHeuristics.GrabClassifier classifier;
+      if (!_classifiers.TryGetValue(original, out classifier)) {
+        throw new InvalidOperationException("Cannot swap from something that is not currently grasped!");
+      }
+
+      classifier.body = replacement.rigidbody;
+      classifier.transform = replacement.transform;
+
+      _classifiers.Remove(original);
+      _classifiers[replacement] = classifier;
     }
 
     protected void FillClassifier(Hand hand, ref GrabClassifierHeuristics.GrabClassifier classifier) {

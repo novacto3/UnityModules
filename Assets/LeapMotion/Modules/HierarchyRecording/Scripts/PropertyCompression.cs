@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -14,7 +14,6 @@ using Leap.Unity.Attributes;
 
 namespace Leap.Unity.Recording {
 
-  [RecordingFriendly]
   public class PropertyCompression : MonoBehaviour {
 
     public NamedCompression[] compressionOverrides;

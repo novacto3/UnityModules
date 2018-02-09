@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -46,6 +46,7 @@ namespace Leap.Unity.Recording {
     public float floatArg = 0F;
     public int intArg = 0;
     public Quaternion quaternionArg = Quaternion.identity;
+    [TextArea]
     public string stringArg = "";
     public Vector2 vector2Arg = Vector2.zero;
     public Vector3 vector3Arg = Vector3.zero;
