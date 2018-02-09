@@ -122,31 +122,6 @@
 
     return curr;
   }
-
-  //This is just an example composite to visualize the distance
-  //field, it's not actually part of the algorithm
-  fixed4 frag_comp(v2f i) : SV_Target {
-    float4 curr = tex2D(_MainTex, i.uv);
-
-    //Grab the signed distance out of the result
-    //Squared distance is stored in the z component
-    float dist = sqrt(curr.z);
-
-    //Calculate a nice stripe effect based on distance
-    float alpha = smoothstep(0.8, 1, sin(140 * dist));
-
-    float3 color;
-
-    //Calculate color based on inside/outside flag
-    //w is non-zero if we are inside
-    if (curr.w) {
-      color = 0.05 * float3(0, 0, 0.6) / dist;
-    } else {
-      color = 0.1 * float3(0, 1, 0) / dist;
-    }
-
-    return float4(color, alpha);
-  }
   ENDCG
 
 	SubShader {
@@ -166,15 +141,6 @@
       CGPROGRAM
       #pragma vertex vert_jump
       #pragma fragment frag_jump
-      ENDCG
-    }
-
-    //Pass 2: Composite
-    Pass{
-      Blend SrcAlpha OneMinusSrcAlpha
-      CGPROGRAM
-      #pragma vertex vert
-      #pragma fragment frag_comp
       ENDCG
     }
 	}
