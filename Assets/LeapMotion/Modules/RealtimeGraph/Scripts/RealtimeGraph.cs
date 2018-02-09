@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -300,10 +300,10 @@ namespace Leap.Unity.Graphing {
         AddSample("Render Delta", GraphUnits.Miliseconds, _renderTicks);
 
         float gpuTime;
-#if UNITY_5_6_OR_NEWER
-        UnityEngine.XR.XRStats.TryGetGPUTimeLastFrame(out gpuTime);
-#else
+#if UNITY_5
         gpuTime = UnityEngine.VR.VRStats.gpuTimeLastFrame;
+#else
+        UnityEngine.XR.XRStats.TryGetGPUTimeLastFrame(out gpuTime);
 #endif
 
         AddSample("GPU Time", GraphUnits.Miliseconds, gpuTime);

@@ -4,7 +4,11 @@ To download Leap Motion's latest stable modules as .unitypackages, visit [our Un
 
 For detailed information about using our Unity Modules, or contributing to this repo, [check out the Wiki][wiki]!
 
-**UnityModules supports Unity 2017.2**
+**UnityModules supports Unity 2017.3**
+
+## License
+
+Use of Leap Motion's UnityModules is subject to the [Leap Motion developer SDK agreement][sdkagreement].
 
 ## This repository
 
@@ -14,3 +18,4 @@ This repository contains code for Leap Motion's Unity Modules, easy-to-use tools
 
 [devsite]: https://developer.leapmotion.com/unity/ "Leap Motion Unity Developer site"
 [wiki]: https://github.com/leapmotion/UnityModules/wiki "Leap Motion Unity Modules Wiki"
+[sdkagreement]: https://developer.leapmotion.com/sdk_agreement "Leap Motion Developer SDK Agreement"

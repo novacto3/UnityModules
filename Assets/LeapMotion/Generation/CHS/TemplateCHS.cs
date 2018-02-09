@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -80,8 +80,8 @@ namespace Leap.Unity.Animation.Generation {
     /// velocities, and times of the endpoints.
     /// </summary>
     public __CHS__(float t0, float t1, __CHS_T__ pos0, __CHS_T__ pos1, __CHS_T__ vel0, __CHS_T__ vel1) {
-      this.t0 = 0;
-      this.t1 = 1;
+      this.t0 = t0;
+      this.t1 = t1;
 
       this.vel0 = vel0;
       this.vel1 = vel1;

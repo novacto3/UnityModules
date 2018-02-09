@@ -4555,7 +4555,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1644821155174504}
-  m_LocalRotation: {x: 0.42216426, y: -0.056469552, z: -0.6626355, w: -0.61603785}
+  m_LocalRotation: {x: 0.4221643, y: -0.056469556, z: -0.66263556, w: -0.6160379}
   m_LocalPosition: {x: 0.012005731, y: 0.02452983, z: 0.083627045}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -7664,6 +7664,7 @@ Camera:
   m_TargetEye: 3
   m_HDR: 0
   m_AllowMSAA: 0
+  m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
@@ -13208,6 +13209,7 @@ MonoBehaviour:
   _hoverEnabled: 1
   _contactEnabled: 1
   _graspingEnabled: 1
+  _leapProvider: {fileID: 0}
   _handDataMode: 0
   enabledPrimaryHoverFingertips: 0101010000
 --- !u!114 &114077906051616622
@@ -13388,7 +13390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c592f16851a620743868a31232613370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelsParent: {fileID: 0}
+  _leapProvider: {fileID: 0}
   ModelPool: []
 --- !u!114 &114274956569900046
 MonoBehaviour:
@@ -13784,6 +13786,7 @@ MonoBehaviour:
   _hoverEnabled: 1
   _contactEnabled: 1
   _graspingEnabled: 1
+  _leapProvider: {fileID: 0}
   _handDataMode: 1
   enabledPrimaryHoverFingertips: 0101010000
 --- !u!114 &114665903370474878
@@ -14102,7 +14105,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _eyeType:
     _orderType: 3
-  _overrideEyePosition: 0
 --- !u!114 &114960047069036262
 MonoBehaviour:
   m_ObjectHideFlags: 1

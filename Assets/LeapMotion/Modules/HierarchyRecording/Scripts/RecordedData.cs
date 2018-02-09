@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -13,9 +13,13 @@ using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
-  [RecordingFriendly]
-  public class RecordedData : MonoBehaviour {
+  [Serializable]
+  public class RecordedLeapData {
+    public List<Frame> frames;
+  }
 
+  [Serializable]
+  public class RecordedDataAsset {
     public List<EditorCurveBindingData> data = new List<EditorCurveBindingData>();
 
     [Serializable]
@@ -26,5 +30,4 @@ namespace Leap.Unity.Recording {
       public AnimationCurve curve;
     }
   }
-
 }

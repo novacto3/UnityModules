@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -13,10 +13,8 @@ using UnityEngine;
 
 namespace Leap.Unity.Recording {
 
-  [RecordingFriendly]
   public class RecordedAudio : MonoBehaviour {
-
-    public float recordingStartTime;
+    
     public AudioSource target;
     public List<ClipData> data = new List<ClipData>();
 
@@ -42,7 +40,7 @@ namespace Leap.Unity.Recording {
       if (didStartNewClip) {
         data.Add(new ClipData() {
           clip = target.clip,
-          startTime = Time.time - recordingStartTime,
+          startTime = HierarchyRecorder.instance.recordingTime,
           pitch = target.pitch,
           volume = target.volume
         });
