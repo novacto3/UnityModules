@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class GizmoBuffer {
@@ -80,7 +79,6 @@ public class GizmoBuffer {
 }
 
 public interface IRuntimeGizmoRenderer {
-  void SetTarget(MonoBehaviour target);
   void SetColor(Color color);
   void DrawWireMesh(Mesh mesh, Matrix4x4 matrix);
   void DrawMesh(Mesh mesh, Matrix4x4 matrix);
