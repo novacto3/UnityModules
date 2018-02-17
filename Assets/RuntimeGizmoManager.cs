@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity;
+using UnityEngine.SceneManagement;
 
 public class RuntimeGizmoManager : MonoBehaviour {
   public const string DEFAULT_SHADER_NAME = "Hidden/Runtime Gizmos";
@@ -86,8 +87,21 @@ public class RuntimeGizmoManager : MonoBehaviour {
     Camera.onPostRender -= onPostRender;
   }
 
-  private void Update() {
+  private List<GameObject> _objList = new List<GameObject>();
+  private List<IRuntimeGizmoComponent> _gizmoList = new List<IRuntimeGizmoComponent>();
+  private void LateUpdate() {
     _canSwap = true;
+
+    for (int i = 0; i < SceneManager.sceneCount; i++) {
+      var scene = SceneManager.GetSceneAt(i);
+      scene.GetRootGameObjects(_objList);
+      foreach (var obj in _objList) {
+        obj.GetComponentsInChildren(includeInactive: false, _gizmoList);
+        foreach (var gizmoComponent in _gizmoList) {
+
+        }
+      }
+    }
   }
 
   private void onPostRender(Camera camera) {
