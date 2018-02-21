@@ -1,11 +1,13 @@
 fileFormatVersion: 2
 guid: d70c07f5d6344ab4e8f039927dbfba11
-timeCreated: 1518817345
+timeCreated: 1519179179
 licenseType: Pro
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - _sphereMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  - _gizmoShader: {fileID: 4800000, guid: 309635e4933310a4d98f0e016c806769, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

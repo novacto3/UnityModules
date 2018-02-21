@@ -49,8 +49,6 @@ namespace Leap.Unity.RuntimeGizmos.Internal {
       int currMesh = 0;
       int currLine = 0;
 
-      Debug.Log(drawer);
-
       foreach (var command in _commands) {
         switch (command) {
           case Command.DrawWireMesh:

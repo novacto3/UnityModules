@@ -149,7 +149,7 @@ namespace Leap.Unity.RuntimeGizmos {
     /// </summary>
     [CreateExtension]
     public void DrawLine(Vector3 a, Vector3 b) {
-      _buffer.DrawLine(a, b);
+      _buffer.DrawLine(_matrix.MultiplyPoint(a), _matrix.MultiplyPoint(b));
     }
 
     /// <summary>
