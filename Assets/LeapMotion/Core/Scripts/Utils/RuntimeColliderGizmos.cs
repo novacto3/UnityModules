@@ -9,7 +9,7 @@
 
 using UnityEngine;
 
-namespace Leap.Unity.RuntimeGizmos {
+namespace Leap.Unity.RuntimeGizmosOld {
 
   public class RuntimeColliderGizmos : MonoBehaviour, IRuntimeGizmoComponent {
 

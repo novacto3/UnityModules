@@ -10,7 +10,7 @@
 using UnityEngine;
 using System.Collections;
 
-namespace Leap.Unity.RuntimeGizmos {
+namespace Leap.Unity.RuntimeGizmosOld {
 
   /// <summary>
   /// This class controls the display of all the runtime gizmos

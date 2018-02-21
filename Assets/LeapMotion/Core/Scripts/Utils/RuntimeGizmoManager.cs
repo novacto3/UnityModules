@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 using System;
 using System.Collections.Generic;
 
-namespace Leap.Unity.RuntimeGizmos {
+namespace Leap.Unity.RuntimeGizmosOld {
 
   /// <summary>
   /// Have your MonoBehaviour implement this interface to be able to draw runtime gizmos.
