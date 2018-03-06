@@ -15,7 +15,7 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
   public bool shouldInterpolate = true;
 
   protected Frame _odometryFrame = new Frame();
-  protected LeapVRTemporalWarping warping;
+  //protected LeapVRTemporalWarping warping;
   protected SmoothedFloat _smoothedUpdateToPrecullLatency = new SmoothedFloat();
 
   [HideInInspector]
@@ -36,7 +36,7 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
     LeapVRCameraControl.OnPreCullEvent += onPreCull;
     _smoothedUpdateToPrecullLatency.value = 1000;
     _smoothedUpdateToPrecullLatency.SetBlend(0.99f, 0.0111f);
-    warping = GetComponentInChildren<LeapVRTemporalWarping>();
+    //warping = GetComponentInChildren<LeapVRTemporalWarping>();
   }
 
   void OnDisable() {
@@ -52,7 +52,7 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
 
     if (Input.GetKeyDown(KeyCode.Space)) {
       shouldOverride = !shouldOverride;
-      warping.autoUpdateHistory = !shouldOverride;
+      //warping.autoUpdateHistory = !shouldOverride;
     }
 
     if (Input.GetKeyDown(KeyCode.R)) {
@@ -124,7 +124,7 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
         rawRotation *= deltaRotation;
       }
 
-      warping.ManuallyUpdateTemporalWarping(rawPosition, rawRotation);
+      //warping.ManuallyUpdateTemporalWarping(rawPosition, rawRotation);
 
       control.SetCameraTransform(rawPosition, rawRotation);
 
@@ -140,22 +140,22 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
 
   public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
     if (drawTrajectory) {
-      for (int i = 0; i < positions.Length - 1; i++) {
+      for (int i = 0; i < positions.Count - 1; i++) {
         drawer.DrawLine(positions.Get(i), positions.Get(i + 1));
       }
 
       drawer.color = Color.red;
-      for (int i = stationaryOffset; i < rotations.Length - 1; i += 20) {
+      for (int i = stationaryOffset; i < rotations.Count - 1; i += 20) {
         drawer.DrawLine(positions.Get(i), positions.Get(i) + (rotations.Get(i + 1) * Vector3.right * 0.1f));
       }
 
       drawer.color = Color.green;
-      for (int i = stationaryOffset; i < rotations.Length - 1; i += 20) {
+      for (int i = stationaryOffset; i < rotations.Count - 1; i += 20) {
         drawer.DrawLine(positions.Get(i), positions.Get(i) + (rotations.Get(i + 1) * Vector3.up * 0.1f));
       }
 
       drawer.color = Color.blue;
-      for (int i = stationaryOffset; i < rotations.Length - 1; i += 20) {
+      for (int i = stationaryOffset; i < rotations.Count - 1; i += 20) {
         drawer.DrawLine(positions.Get(i), positions.Get(i) + (rotations.Get(i + 1) * Vector3.forward * 0.1f));
       }
     }
