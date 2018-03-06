@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -26,6 +26,8 @@ namespace Leap.Unity.Generation {
           Debug.LogException(e);
         }
       }
+      AssetDatabase.Refresh();
+      AssetDatabase.SaveAssets();
     }
 
     protected override void OnEnable() {
@@ -41,6 +43,9 @@ namespace Leap.Unity.Generation {
         foreach (var target in targets) {
           target.Generate();
         }
+
+        AssetDatabase.Refresh();
+        AssetDatabase.SaveAssets();
       }
 
       base.OnInspectorGUI();

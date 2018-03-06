@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -33,7 +33,7 @@ namespace Leap.Unity.Interaction {
   /// Leap Motion Controller, or by remote-style held controllers
   /// such as the Oculus Touch or Vive controller.
   /// </summary>
-  public enum ControllerType { Hand, VRController }
+  public enum ControllerType { Hand, XRController }
 
   [DisallowMultipleComponent]
   public abstract class InteractionController : MonoBehaviour,
