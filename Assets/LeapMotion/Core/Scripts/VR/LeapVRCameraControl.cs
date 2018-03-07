@@ -120,12 +120,12 @@ namespace Leap.Unity {
       Matrix4x4 offsetMatrix;
 
       if (_overrideEyePosition) {
-        throw new NotImplementedException("Dont do that.");
-        //offsetMatrix = _finalCenterMatrix;
+        //throw new NotImplementedException("Dont do that.");
+        offsetMatrix = _finalCenterMatrix;
         //Debug.Log(_deviceInfo.baseline);
-        //Vector3 ipdOffset = (_eyeType.IsLeftEye ? 1 : -1) * transform.right * _deviceInfo.baseline * 0.5f;
-        //Vector3 forwardOffset = -transform.forward * _deviceInfo.focalPlaneOffset;
-        //offsetMatrix *= Matrix4x4.TRS(ipdOffset + forwardOffset, Quaternion.identity, Vector3.one);
+        Vector3 ipdOffset = (_eyeType.IsLeftEye ? 1 : -1) * transform.right * 0.064f * 0.5f;
+        Vector3 forwardOffset = -transform.forward * 0.07f;//_deviceInfo.focalPlaneOffset;
+        offsetMatrix *= Matrix4x4.TRS(ipdOffset + forwardOffset, Quaternion.identity, Vector3.one);
       } else {
         if (_isCenterMatrixOverriden) {
           Matrix4x4 eyeDelta = _camera.worldToCameraMatrix * _finalCenterMatrix.inverse;
