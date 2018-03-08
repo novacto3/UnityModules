@@ -45,16 +45,21 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
     LeapVRCameraControl.OnPreCullEvent -= onPreCull;
     LeapProvider.GetLeapController().headPoseChange -= onHeadPoseChange;
   }
-
+  
   void onHeadPoseChange(object sender, HeadPoseEventArgs args) {
-    rawPosition = args.headPosition.ToVector3()/1000f;
+    /*rawPosition = args.headPosition.ToVector3()/1000f;
     rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
 
     rawRotation =  Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
-                   Quaternion.LookRotation(args.headOrientation.m3.ToVector3(), 
-                                           args.headOrientation.m2.ToVector3()) *
-Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
+                      args.headOrientation.ToQuaternion() *
+                   //Quaternion.LookRotation(args.headOrientation.m3.ToVector3(), 
+                   //                        args.headOrientation.m2.ToVector3()) *
+    Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));*/
+
+    
     updated = true;
+
+    //Debug.Log(args.time);
   }
 
   public bool shouldOverride = true;
@@ -104,37 +109,47 @@ Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
       _smoothedUpdateToPrecullLatency.value = Mathf.Min(_smoothedUpdateToPrecullLatency.value, 10000f);
       _smoothedUpdateToPrecullLatency.Update((LeapProvider.GetLeapController().Now() - LeapProvider.leaptime), Time.deltaTime);
 
+      //We'll get the interpolated API working at some point
       //LeapProvider.GetLeapController().Frame(_odometryFrame);
       //LeapProvider.GetLeapController().GetInterpolatedFrameFromTime(_odometryFrame, LeapProvider.CalculateInterpolationTime() + (ExtrapolationAmount * 1000), LeapProvider.CalculateInterpolationTime() - (BounceAmount * 1000));
       //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.GetLeapController().Now());
       //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.GetLeapController().Now() - (long)_smoothedTrackingLatency.value);
-      /*if (shouldInterpolate) {
-        LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value); //This value is baaaasically 1000 all the time
+      //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value); //This value is baaaasically 1000 all the time
+      
+     if (shouldInterpolate) {
+        LeapInternal.LEAP_HEAD_POSE_EVENT headEvent = LeapProvider.GetLeapController().GetInterpolatedHeadPose(LeapProvider.GetLeapController().Now());/*LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value*/ //This value is baaaasically 1000 all the time
+        rawPosition = headEvent.head_position.ToVector3() / 1000f;
+        rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
+
+        rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
+                              headEvent.head_orientation.ToQuaternion() *
+   Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
+        //Debug.Log("Event Timestamp: "+headEvent.timestamp+" "+ LeapProvider.GetLeapController().Now());
       } else {
         LeapProvider.GetLeapController().Frame(_odometryFrame);
       }
 
-      rawPosition = _odometryFrame.HeadPosition.ToVector3() / 1000f;
+      /*rawPosition = _odometryFrame.HeadPosition.ToVector3();// / 1000f;
       rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
 
       rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
                             _odometryFrame.HeadOrientation.ToQuaternion() *
  Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));*/
 
-      //if (rawPosition == Vector3.zero) {
-      //  rawPosition = new Vector3(Mathf.Sin(Time.time), Mathf.Cos(Time.time), Mathf.Cos(Time.time*2f));
-      //  rawRotation = Quaternion.LookRotation(-rawPosition.normalized);
-      //}
+      /*if (rawPosition == Vector3.zero) {
+        rawPosition = new Vector3(Mathf.Sin(Time.time), Mathf.Cos(Time.time), Mathf.Cos(Time.time*2f));
+        rawRotation = Quaternion.LookRotation(-rawPosition.normalized);
+      }*/
 
       //Quaternion OculusRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
       //Quaternion delayedOculusRotation1;
       //delay1.UpdateDelay(OculusRotation, Time.time, adjustment, out delayedOculusRotation1);
 
-      if (updated) {
+      /*if (updated) {
         rawPosition += rawRotation * Vector3.back * 0.11f;
         rawPosition -= positionalDrift;
         updated = false;
-      }
+      }*/
 
       //Quaternion deltaRotation = Quaternion.Inverse(delayedOculusRotation1) * OculusRotation;
       //if (useOculus) {
