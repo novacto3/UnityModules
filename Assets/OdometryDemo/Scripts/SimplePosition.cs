@@ -38,18 +38,19 @@ public class SimplePosition : MonoBehaviour {
     //LeapProvider.GetLeapController().GetInterpolatedFrameFromTime(_odometryFrame, LeapProvider.CalculateInterpolationTime() + (ExtrapolationAmount * 1000), LeapProvider.CalculateInterpolationTime() - (BounceAmount * 1000));
     //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.GetLeapController().Now());
     //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.GetLeapController().Now() - (long)_smoothedTrackingLatency.value);
-    if (shouldInterpolate) {
-      LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value); //This value is baaaasically 1000 all the time
-    } else {
-      LeapProvider.GetLeapController().Frame(_odometryFrame);
-    }
+    //if (shouldInterpolate) {
+      LeapInternal.LEAP_HEAD_POSE_EVENT headPoseEvent = new LeapInternal.LEAP_HEAD_POSE_EVENT();
+      LeapProvider.GetLeapController().GetInterpolatedHeadPose(ref headPoseEvent, LeapProvider.CurrentFrame.Timestamp/* + (long)_smoothedUpdateToPrecullLatency.value*/); //This value is baaaasically 1000 all the time
 
-    rawPosition = _odometryFrame.HeadPosition.ToVector3() / 1000f;
-    rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
+      rawPosition = headPoseEvent.head_position.ToVector3() / 1000f;
+      rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
 
-    rawRotation =  Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
-                           _odometryFrame.HeadOrientation.ToQuaternion() *
-Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
+      rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
+                             headPoseEvent.head_orientation.ToQuaternion() *
+  Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
+    //}// else {
+      //LeapProvider.GetLeapController().Frame(_odometryFrame);
+    //}
 
     if (rawPosition == Vector3.zero) {
       rawPosition = (new Vector3(Mathf.Sin(Time.time), Mathf.Cos(Time.time), Mathf.Cos(Time.time * 2f))*0.1f);

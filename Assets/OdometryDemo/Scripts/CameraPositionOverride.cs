@@ -5,7 +5,8 @@ using Leap.Unity;
 using Leap;
 using Leap.Unity.RuntimeGizmos;
 
-public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
+public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
+{
   public LeapServiceProvider LeapProvider;
   //public Text latencyText;
   public int ExtrapolationAmount = 0;
@@ -33,7 +34,8 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
   public RingBuffer<Quaternion> rotations = new RingBuffer<Quaternion>(500);
   int stationaryOffset = 0;
 
-  void OnEnable() {
+  void OnEnable()
+  {
     LeapVRCameraControl.OnPreCullEvent += onPreCull;
     _smoothedUpdateToPrecullLatency.value = 1000;
     _smoothedUpdateToPrecullLatency.SetBlend(0.99f, 0.0111f);
@@ -41,12 +43,14 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
     LeapProvider.GetLeapController().headPoseChange += onHeadPoseChange;
   }
 
-  void OnDisable() {
+  void OnDisable()
+  {
     LeapVRCameraControl.OnPreCullEvent -= onPreCull;
     LeapProvider.GetLeapController().headPoseChange -= onHeadPoseChange;
   }
-  
-  void onHeadPoseChange(object sender, HeadPoseEventArgs args) {
+
+  void onHeadPoseChange(object sender, HeadPoseEventArgs args)
+  {
     /*rawPosition = args.headPosition.ToVector3()/1000f;
     rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
 
@@ -56,14 +60,15 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
                    //                        args.headOrientation.m2.ToVector3()) *
     Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));*/
 
-    
+
     updated = true;
 
     //Debug.Log(args.time);
   }
 
   public bool shouldOverride = true;
-  void Update() {
+  void Update()
+  {
     if (shouldOverride) {
       transform.position = rawPosition;
       transform.rotation = rawRotation;
@@ -104,7 +109,8 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
     }
   }
 
-  private void onPreCull(LeapVRCameraControl control) {
+  private void onPreCull(LeapVRCameraControl control)
+  {
     if (shouldOverride) {
       _smoothedUpdateToPrecullLatency.value = Mathf.Min(_smoothedUpdateToPrecullLatency.value, 10000f);
       _smoothedUpdateToPrecullLatency.Update((LeapProvider.GetLeapController().Now() - LeapProvider.leaptime), Time.deltaTime);
@@ -115,19 +121,21 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
       //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.GetLeapController().Now());
       //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.GetLeapController().Now() - (long)_smoothedTrackingLatency.value);
       //LeapProvider.GetLeapController().GetInterpolatedFrame(_odometryFrame, LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value); //This value is baaaasically 1000 all the time
-      
-     if (shouldInterpolate) {
-        LeapInternal.LEAP_HEAD_POSE_EVENT headEvent = LeapProvider.GetLeapController().GetInterpolatedHeadPose(LeapProvider.GetLeapController().Now());/*LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value*/ //This value is baaaasically 1000 all the time
-        rawPosition = headEvent.head_position.ToVector3() / 1000f;
-        rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
 
-        rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
-                              headEvent.head_orientation.ToQuaternion() *
-   Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
-        //Debug.Log("Event Timestamp: "+headEvent.timestamp+" "+ LeapProvider.GetLeapController().Now());
-      } else {
-        LeapProvider.GetLeapController().Frame(_odometryFrame);
-      }
+      //if (shouldInterpolate) {
+      LeapInternal.LEAP_HEAD_POSE_EVENT headPoseEvent = new LeapInternal.LEAP_HEAD_POSE_EVENT();
+      LeapProvider.GetLeapController().GetInterpolatedHeadPose(ref headPoseEvent, LeapProvider.GetLeapController().Now());//LeapProvider.CurrentFrame.Timestamp/* + (long)_smoothedUpdateToPrecullLatency.value*/); //This value is baaaasically 1000 all the time
+
+      rawPosition = headPoseEvent.head_position.ToVector3() / 1000f;
+      rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
+
+      rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
+                             headPoseEvent.head_orientation.ToQuaternion() *
+  Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
+      //Debug.Log("Event Timestamp: "+headEvent.timestamp+" "+ LeapProvider.GetLeapController().Now());
+      //} else {
+      //  LeapProvider.GetLeapController().Frame(_odometryFrame);
+      //}
 
       /*rawPosition = _odometryFrame.HeadPosition.ToVector3();// / 1000f;
       rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
@@ -141,9 +149,9 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
         rawRotation = Quaternion.LookRotation(-rawPosition.normalized);
       }*/
 
-      //Quaternion OculusRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
-      //Quaternion delayedOculusRotation1;
-      //delay1.UpdateDelay(OculusRotation, Time.time, adjustment, out delayedOculusRotation1);
+      Quaternion OculusRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
+      Quaternion delayedOculusRotation1;
+      delay1.UpdateDelay(OculusRotation, Time.time, adjustment, out delayedOculusRotation1);
 
       /*if (updated) {
         rawPosition += rawRotation * Vector3.back * 0.11f;
@@ -170,7 +178,8 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent {
     }
   }
 
-  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer) {
+  public void OnDrawRuntimeGizmos(RuntimeGizmoDrawer drawer)
+  {
     if (drawTrajectory) {
       for (int i = 0; i < positions.Count - 1; i++) {
         drawer.DrawLine(positions.Get(i), positions.Get(i + 1));

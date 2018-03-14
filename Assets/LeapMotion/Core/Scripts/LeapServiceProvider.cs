@@ -384,7 +384,7 @@ namespace Leap.Unity {
       } else {
         return 0;
       }
-      //leap_controller_.ClearPolicy(Controller.PolicyFlag.POLICY_IMAGES);
+      //_leapController.ClearPolicy(Controller.PolicyFlag.POLICY_IMAGES);
       //leap_controller_.SetPolicy(Controller.PolicyFlag.POLICY_MAP_POINTS);
       #endif
     }
@@ -396,7 +396,7 @@ namespace Leap.Unity {
       if (_leapController == null) {
         return;
       }
-
+      _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_IMAGES);
       _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
     }
     
