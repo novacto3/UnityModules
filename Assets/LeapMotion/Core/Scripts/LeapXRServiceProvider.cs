@@ -255,6 +255,7 @@ namespace Leap.Unity {
       Shader.SetGlobalMatrix("_LeapGlobalWarpedOffset", imageMatWarp);
     }
 
+    public Pose overridePose = Pose.identity;
     void OnPreCull() {
       #if UNITY_EDITOR
       if (!Application.isPlaying) {
@@ -263,11 +264,12 @@ namespace Leap.Unity {
 #endif
 
       // Get most recent tracked pose.
-      var trackedPose = new Pose(XRSupportUtil.GetXRNodeCenterEyeLocalPosition(),
-                                 XRSupportUtil.GetXRNodeCenterEyeLocalRotation());
+      var trackedPose = overridePose == Pose.identity ? new Pose(XRSupportUtil.GetXRNodeCenterEyeLocalPosition(),
+                                                                 XRSupportUtil.GetXRNodeCenterEyeLocalRotation()) : overridePose;
 
       // If we don't know of any pose offset yet, account for it by finding the pose
       // delta from the "local" tracked pose to the actual camera pose.
+      _trackingBaseDeltaPose = Pose.identity;
       if (!_trackingBaseDeltaPose.HasValue) {
         _trackingBaseDeltaPose = _cachedCamera.transform.ToLocalPose()
                                    * trackedPose.inverse;

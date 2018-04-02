@@ -7,13 +7,14 @@ using Leap.Unity.RuntimeGizmos;
 
 public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
 {
-  public LeapServiceProvider LeapProvider;
+  public LeapXRServiceProvider LeapProvider;
   //public Text latencyText;
   public int ExtrapolationAmount = 0;
   public int BounceAmount = 0;
-  [Range(0.005f, 0.08f)]
+  [Range(0.005f, 0.58f)]
   public float adjustment = 0.045f;
   public bool shouldInterpolate = true;
+  public QuickGrapher grapher;
 
   protected Frame _odometryFrame = new Frame();
   //protected LeapVRTemporalWarping warping;
@@ -25,6 +26,7 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
   public Quaternion rawRotation;
   private Vector3 positionalDrift = Vector3.zero;
   bool updated = false;
+  private Quaternion lastRotation = Quaternion.identity;
 
   private TimeDelay delay1 = new TimeDelay();
   private bool useOculus = true;
@@ -40,13 +42,13 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
     _smoothedUpdateToPrecullLatency.value = 1000;
     _smoothedUpdateToPrecullLatency.SetBlend(0.99f, 0.0111f);
     //warping = GetComponentInChildren<LeapVRTemporalWarping>();
-    LeapProvider.GetLeapController().headPoseChange += onHeadPoseChange;
+    //LeapProvider.GetLeapController().headPoseChange += onHeadPoseChange;
   }
 
   void OnDisable()
   {
     LeapVRCameraControl.OnPreCullEvent -= onPreCull;
-    LeapProvider.GetLeapController().headPoseChange -= onHeadPoseChange;
+    //LeapProvider.GetLeapController().headPoseChange -= onHeadPoseChange;
   }
 
   void onHeadPoseChange(object sender, HeadPoseEventArgs args)
@@ -124,47 +126,39 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
 
       //if (shouldInterpolate) {
       LeapInternal.LEAP_HEAD_POSE_EVENT headPoseEvent = new LeapInternal.LEAP_HEAD_POSE_EVENT();
-      LeapProvider.GetLeapController().GetInterpolatedHeadPose(ref headPoseEvent, LeapProvider.GetLeapController().Now());//LeapProvider.CurrentFrame.Timestamp/* + (long)_smoothedUpdateToPrecullLatency.value*/); //This value is baaaasically 1000 all the time
+      LeapProvider.GetLeapController().GetInterpolatedHeadPose(ref headPoseEvent, LeapProvider.CurrentFrame.Timestamp + (long)_smoothedUpdateToPrecullLatency.value); //This value is baaaasically 1000 all the time //LeapProvider.GetLeapController().Now());//
 
       rawPosition = headPoseEvent.head_position.ToVector3() / 1000f;
       rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
 
       rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
                              headPoseEvent.head_orientation.ToQuaternion() *
-  Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
+ Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));
       //Debug.Log("Event Timestamp: "+headEvent.timestamp+" "+ LeapProvider.GetLeapController().Now());
       //} else {
       //  LeapProvider.GetLeapController().Frame(_odometryFrame);
       //}
 
-      /*rawPosition = _odometryFrame.HeadPosition.ToVector3();// / 1000f;
-      rawPosition = new Vector3(-rawPosition.x, -rawPosition.z, rawPosition.y);
-
-      rawRotation = Quaternion.LookRotation(Vector3.up, -Vector3.forward) *
-                            _odometryFrame.HeadOrientation.ToQuaternion() *
- Quaternion.Inverse(Quaternion.LookRotation(Vector3.up, -Vector3.forward));*/
-
-      /*if (rawPosition == Vector3.zero) {
-        rawPosition = new Vector3(Mathf.Sin(Time.time), Mathf.Cos(Time.time), Mathf.Cos(Time.time*2f));
-        rawRotation = Quaternion.LookRotation(-rawPosition.normalized);
-      }*/
+      if (rawPosition == Vector3.zero) {
+        //rawPosition = new Vector3(Mathf.Sin(Time.time), Mathf.Cos(Time.time), Mathf.Cos(Time.time*2f));
+        //rawRotation = Quaternion.LookRotation(-rawPosition.normalized);
+      }
+      //rawPosition = Vector3.zero;
+      //rawRotation = Quaternion.identity;
 
       Quaternion OculusRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
       Quaternion delayedOculusRotation1;
       delay1.UpdateDelay(OculusRotation, Time.time, adjustment, out delayedOculusRotation1);
 
-      /*if (updated) {
-        rawPosition += rawRotation * Vector3.back * 0.11f;
-        rawPosition -= positionalDrift;
-        updated = false;
-      }*/
+      Quaternion deltaRotation = Quaternion.Inverse(delayedOculusRotation1) * OculusRotation;
+      if (useOculus) {
+        rawRotation *= deltaRotation; //OculusRotation;//
+      }
 
-      //Quaternion deltaRotation = Quaternion.Inverse(delayedOculusRotation1) * OculusRotation;
-      //if (useOculus) {
-      //  rawRotation *= deltaRotation;
-      //}
+      rawPosition += rawRotation * Vector3.back * 0.11f;
+      rawPosition -= positionalDrift;
 
-      //warping.ManuallyUpdateTemporalWarping(rawPosition, rawRotation);
+      LeapProvider.overridePose = new Leap.Unity.Pose(rawPosition, rawRotation);
 
       positions.Add(rawPosition);
       rotations.Add(rawRotation);
@@ -173,8 +167,11 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
       if (stationaryOffset == -1) {
         stationaryOffset = 19;
       }
-      //control.SetCameraTransform(rawPosition, rawRotation);
-      transform.SetPositionAndRotation(rawPosition, rawRotation);
+      control.SetCameraTransform(rawPosition, rawRotation);
+
+      grapher.UpdateSample(Quaternion.Angle(rawRotation, lastRotation), Time.time);
+      lastRotation = rawRotation;
+      //transform.SetPositionAndRotation(rawPosition, rawRotation);
     }
   }
 
