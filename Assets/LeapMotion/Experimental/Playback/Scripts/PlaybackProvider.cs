@@ -91,7 +91,12 @@ namespace Leap.Unity.Playback {
 
       _currentFrameIndex = newFrameIndex;
 
-      _transformedFrame.CopyFrom(_recording.frames[_currentFrameIndex]).Transform(new LeapTransform(transform.position.ToVector(), transform.rotation.ToLeapQuaternion(), transform.lossyScale.ToVector()));
+      _transformedFrame.CopyFrom(_recording.frames[_currentFrameIndex]).Transform(
+        new LeapTransform(transform.position.ToVector(),
+                          transform.rotation.ToLeapQuaternion(),
+                          transform.lossyScale.ToVector()));
+
+      ApplyPostProcesses(_transformedFrame);
     }
 
     protected virtual void Start() {

@@ -430,9 +430,24 @@ namespace Leap.Unity {
       initializeFlags();
       _leapController.Device -= onHandControllerConnect;
     }
-
-    protected virtual void transformFrame(Frame source, Frame dest) {
+    
+    /// <summary>
+    /// Transforms the source frame into the destination frame using GetLeapMatrix().
+    /// The XR subclass of the Service Provider overrides this to also apply temporal
+    /// warping.
+    /// 
+    /// This method is used whenever the untransformed frame is updated with data from
+    /// the Leap sensor, so by default it also fires the framePostProcesses event to
+    /// apply user-specified post-processes. Pass `alsoApplyPostProcesses: false` to
+    /// skip this behavior.
+    /// </summary>
+    protected virtual void transformFrame(Frame source, Frame dest,
+                                          bool alsoApplyPostProcesses = true) {
       dest.CopyFrom(source).Transform(transform.GetLeapMatrix());
+
+      if (alsoApplyPostProcesses) {
+        ApplyPostProcesses(dest);
+      }
     }
 
     #endregion

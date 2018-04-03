@@ -13,7 +13,7 @@ using UnityEditor;
 namespace Leap.Unity {
 
   [CustomEditor(typeof(LeapServiceProvider))]
-  public class LeapServiceProviderEditor : CustomEditorBase<LeapServiceProvider> {
+  public class LeapServiceProviderEditor : LeapProviderEditor {
 
     protected Vector3 arcDirection = -Vector3.forward;
     protected Quaternion deviceRotation = Quaternion.identity;

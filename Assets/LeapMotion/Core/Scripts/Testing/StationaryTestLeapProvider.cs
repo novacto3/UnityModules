@@ -40,6 +40,8 @@ namespace Leap.Unity {
 
       _curFrame.Hands.Add(_leftHand);
       _curFrame.Hands.Add(_rightHand);
+
+      ApplyPostProcesses(_curFrame);
     }
 
     void Update() {

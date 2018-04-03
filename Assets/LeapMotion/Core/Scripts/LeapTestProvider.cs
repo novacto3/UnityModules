@@ -27,6 +27,7 @@ namespace Leap.Unity {
            + "from Frame data, as if it stopped tracking.")]
     public Transform leftHandBasis;
     private Hand _leftHand = null;
+    private Hand _frameLeftHand = null;
     private Hand _cachedLeftHand = null;
 
     [Tooltip("At runtime, if this Transform is non-null, the LeapTestProvider will "
@@ -35,6 +36,7 @@ namespace Leap.Unity {
            + "from Frame data, as if it stopped tracking.")]
     public Transform rightHandBasis;
     private Hand _rightHand = null;
+    private Hand _frameRightHand = null;
     private Hand _cachedRightHand = null;
 
     void Awake() {
@@ -42,6 +44,11 @@ namespace Leap.Unity {
                                            unitType: TestHandFactory.UnitType.UnityUnits);
       _cachedRightHand = TestHandFactory.MakeTestHand(isLeft: false,
                                            unitType: TestHandFactory.UnitType.UnityUnits);
+
+      _frameLeftHand = new Hand();
+      _frameLeftHand.CopyFrom(_cachedLeftHand);
+      _frameRightHand = new Hand();
+      _frameRightHand.CopyFrom(_cachedRightHand);
     }
 
     void Update() {
@@ -54,6 +61,10 @@ namespace Leap.Unity {
         _leftHand = null;
       }
       if (_leftHand != null) {
+        // Use a frame-lifetime hand so that post-processes per-frame don't
+        // stack every update.
+        _frameLeftHand.CopyFrom(_cachedLeftHand);
+        _leftHand = _frameLeftHand;
         _leftHand.SetTransform(leftHandBasis.position, leftHandBasis.rotation);
       }
 
@@ -66,8 +77,14 @@ namespace Leap.Unity {
         _rightHand = null;
       }
       if (_rightHand != null) {
+        // Use a frame-lifetime hand so that post-processes per-frame don't
+        // stack every update.
+        _frameRightHand.CopyFrom(_cachedRightHand);
+        _rightHand = _frameRightHand;
         _rightHand.SetTransform(rightHandBasis.position, rightHandBasis.rotation);
       }
+
+      ApplyPostProcesses(frame);
 
       DispatchUpdateFrameEvent(frame);
     }

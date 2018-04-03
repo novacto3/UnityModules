@@ -10,6 +10,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
+using UnityEngine.Events;
 
 namespace Leap.Unity {
 
@@ -25,6 +26,36 @@ namespace Leap.Unity {
     public event Action<Frame> OnUpdateFrame;
     public event Action<Frame> OnFixedFrame;
 
+    [Serializable]
+    public class FramePostProcessEvent : UnityEvent<Frame> { }
+    /// <summary>
+    /// LeapProviders support arbitrary post-processing on Frame data via the
+    /// framePostProcesses UnityEvent. Each event consumer is allowed to modify Frame
+    /// data passed to the event in-place, which is passed through the consumer chain
+    /// prior to sending Frame data out. Implementers of LeapProvider may update Frame
+    /// data at different times, so actually firing the event to post-process frames must
+    /// be handled by those implementers. This is easily accomplished by passing the
+    /// Frame object to the protected applyPostProcesses method.
+    /// </summary>
+    [SerializeField]
+    private FramePostProcessEvent _framePostProcesses = null;
+    public FramePostProcessEvent framePostProcesses {
+      get { if (_framePostProcesses == null) {
+          _framePostProcesses = new FramePostProcessEvent();
+        }
+        return _framePostProcesses;
+      }
+    }
+    /// <summary>
+    /// Fires the framePostProcesses event using the frame object, which will be
+    /// modified in-place by any event consumers. This should usually be called just
+    /// after the LeapProvider implementer has updated its "canonical" frame data, e.g.,
+    /// from sensor data.
+    /// </summary>
+    protected void ApplyPostProcesses(Frame frame) {
+      framePostProcesses.Invoke(frame);
+    }
+
     /// <summary>
     /// The current frame for this update cycle, in world space. 
     /// 
@@ -32,6 +63,9 @@ namespace Leap.Unity {
     /// to this frame, or a reference to any object that is a part of this frame,
     /// it might change unexpectedly.  If you want to save a reference, make sure
     /// to make a copy.
+    /// 
+    /// Implementers are responsible for applying any post-processes specified by the
+    /// user before sending out Frame data. See framePostProcesses.
     /// </summary>
     public abstract Frame CurrentFrame { get; }
 
@@ -42,6 +76,9 @@ namespace Leap.Unity {
     /// to this frame, or a reference to any object that is a part of this frame,
     /// it might change unexpectedly.  If you want to save a reference, make sure
     /// to make a copy.
+    /// 
+    /// Implementers are responsible for applying any post-processes specified by the
+    /// user before sending out Frame data. See framePostProcesses.
     /// </summary>
     public abstract Frame CurrentFixedFrame { get; }
 

@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
@@ -8,33 +8,18 @@
  ******************************************************************************/
 
 using UnityEngine;
-using Leap.Unity.RuntimeGizmos;
+using UnityEditor;
 
-namespace Leap.Unity.Recording {
+namespace Leap.Unity {
 
-  public class LeapPlayableProvider : LeapProvider {
+  [CustomEditor(typeof(LeapProvider), editorForChildClasses: true)]
+  public class LeapProviderEditor : CustomEditorBase<LeapProvider> {
 
-    private Frame _frame;
+    protected override void OnEnable() {
+      base.OnEnable();
 
-    public override Frame CurrentFixedFrame {
-      get {
-        return _frame;
-      }
+      deferProperty("_framePostProcesses");
     }
 
-    public override Frame CurrentFrame {
-      get {
-        return _frame;
-      }
-    }
-
-    public void SetCurrentFrame(Frame frame) {
-      _frame = frame;
-
-      ApplyPostProcesses(frame);
-
-      DispatchUpdateFrameEvent(frame);
-      DispatchFixedFrameEvent(frame);
-    }
   }
 }

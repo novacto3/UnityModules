@@ -314,9 +314,14 @@ namespace Leap.Unity {
       _leapController.SetPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
     }
 
-    protected override void transformFrame(Frame source, Frame dest) {
+    protected override void transformFrame(Frame source, Frame dest,
+                                           bool alsoApplyPostProcesses = true) {
       LeapTransform leapTransform = GetWarpedMatrix(source.Timestamp);
       dest.CopyFrom(source).Transform(leapTransform);
+
+      if (alsoApplyPostProcesses) {
+        ApplyPostProcesses(dest);
+      }
     }
 
     #endregion
