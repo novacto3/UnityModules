@@ -142,9 +142,9 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
       if (rawPosition == Vector3.zero) {
         //rawPosition = new Vector3(Mathf.Sin(Time.time), Mathf.Cos(Time.time), Mathf.Cos(Time.time*2f));
         //rawRotation = Quaternion.LookRotation(-rawPosition.normalized);
+        rawPosition = Vector3.zero;
+        rawRotation = Quaternion.identity;
       }
-      //rawPosition = Vector3.zero;
-      //rawRotation = Quaternion.identity;
 
       Quaternion OculusRotation = UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.CenterEye);
       Quaternion delayedOculusRotation1;

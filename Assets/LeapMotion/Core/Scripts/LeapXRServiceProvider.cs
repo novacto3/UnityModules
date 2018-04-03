@@ -269,7 +269,7 @@ namespace Leap.Unity {
 
       // If we don't know of any pose offset yet, account for it by finding the pose
       // delta from the "local" tracked pose to the actual camera pose.
-      _trackingBaseDeltaPose = Pose.identity;
+      _trackingBaseDeltaPose = new Pose(-transform.root.position, transform.root.rotation);
       if (!_trackingBaseDeltaPose.HasValue) {
         _trackingBaseDeltaPose = _cachedCamera.transform.ToLocalPose()
                                    * trackedPose.inverse;
