@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -7,10 +7,10 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-using UnityEngine;
 using System.Collections.Generic;
 
 namespace Leap.Unity {
+  using Query;
 
   /// <summary>
   /// A simple wrapper around HashSet to provide readonly access.
@@ -38,8 +38,16 @@ namespace Leap.Unity {
       return _set.Contains(obj);
     }
 
+    public Query<T> Query() {
+      return _set.Query();
+    }
+
     public static implicit operator ReadonlyHashSet<T>(HashSet<T> set) {
       return new ReadonlyHashSet<T>(set);
+    }
+
+    public static implicit operator ReadonlyHashSet<T>(SerializableHashSet<T> set) {
+      return (HashSet<T>)set;
     }
   }
 }

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (C) Leap Motion, Inc. 2011-2017.                                 *
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
  * Leap Motion proprietary and  confidential.                                 *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
@@ -24,7 +24,7 @@ namespace Leap.Unity.Interaction.Tests {
       yield return wait(beginningTestWait);
 
       InitTest();
-      provider.editTimePose = TestHandFactory.TestHandPose.PoseB;
+      provider.editTimePose = TestHandFactory.TestHandPose.HeadMountedB;
 
       yield return wait(aBit);
 
@@ -47,7 +47,7 @@ namespace Leap.Unity.Interaction.Tests {
       yield return wait(beginningTestWait);
 
       InitTest();
-      provider.editTimePose = TestHandFactory.TestHandPose.PoseB;
+      provider.editTimePose = TestHandFactory.TestHandPose.HeadMountedB;
       
       var rHandPos = rightHand.leapHand.PalmPosition.ToVector3();
 
@@ -75,7 +75,7 @@ namespace Leap.Unity.Interaction.Tests {
       yield return wait(beginningTestWait);
 
       InitTest();
-      provider.editTimePose = TestHandFactory.TestHandPose.PoseB;
+      provider.editTimePose = TestHandFactory.TestHandPose.HeadMountedB;
 
       yield return wait(aBit);
       
@@ -101,7 +101,7 @@ namespace Leap.Unity.Interaction.Tests {
       yield return wait(beginningTestWait);
 
       InitTest();
-      provider.editTimePose = TestHandFactory.TestHandPose.PoseB;
+      provider.editTimePose = TestHandFactory.TestHandPose.HeadMountedB;
 
       yield return wait(aWhile);
       
