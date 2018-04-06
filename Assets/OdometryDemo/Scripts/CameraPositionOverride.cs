@@ -11,8 +11,8 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
   //public Text latencyText;
   public int ExtrapolationAmount = 0;
   public int BounceAmount = 0;
-  [Range(0.005f, 0.58f)]
-  public float adjustment = 0.045f;
+  [Range(0.005f, 0.08f)]
+  public float adjustment = 0.035f;
   public bool shouldInterpolate = true;
   public QuickGrapher grapher;
 
@@ -155,7 +155,7 @@ public class CameraPositionOverride : MonoBehaviour, IRuntimeGizmoComponent
         rawRotation *= deltaRotation; //OculusRotation;//
       }
 
-      rawPosition += rawRotation * Vector3.back * 0.11f;
+      rawPosition += rawRotation * Vector3.back * 0.09f;
       rawPosition -= positionalDrift;
 
       LeapProvider.overridePose = new Leap.Unity.Pose(rawPosition, rawRotation);
