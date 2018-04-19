@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -87,9 +87,7 @@ namespace Leap.Unity {
         HandRepresentation rep;
         if (!all_hand_reps.TryGetValue(curHand.Id, out rep)) {
           rep = MakeHandRepresentation(curHand, modelType);
-          if (rep != null) {
-            all_hand_reps.Add(curHand.Id, rep);
-          }
+          all_hand_reps.Add(curHand.Id, rep);
         }
         if (rep != null) {
           rep.IsMarked = true;
@@ -189,8 +187,6 @@ namespace Leap.Unity {
       public List<HandModelBase> modelsCheckedOut = new List<HandModelBase>();
       public bool IsEnabled = true;
       public bool CanDuplicate;
-
-      public Hands.HandEvent HandPostProcesses;
 
       /*Looks for suitable HandModelBase is the ModelGroup's modelList, if found, it is added to modelsCheckedOut.
        * If not, one can be cloned*/
@@ -475,13 +471,15 @@ namespace Leap.Unity {
     #if UNITY_EDITOR
     /**In the Unity Editor, Validate that the HandModelBase is an instance of a prefab from the scene vs. a prefab from the project. */
     void OnValidate() {
-      for (int i = 0; i < ModelPool.Count; i++) {
-        if (ModelPool[i] != null) {
-          if (ModelPool[i].LeftModel) {
-            ModelPool[i].IsLeftToBeSpawned = shouldBeSpawned(ModelPool[i].LeftModel);
-          }
-          if (ModelPool[i].RightModel) {
-            ModelPool[i].IsRightToBeSpawned = shouldBeSpawned(ModelPool[i].RightModel);
+      if (ModelPool != null) {
+        for (int i = 0; i < ModelPool.Count; i++) {
+          if (ModelPool[i] != null) {
+            if (ModelPool[i].LeftModel) {
+              ModelPool[i].IsLeftToBeSpawned = shouldBeSpawned(ModelPool[i].LeftModel);
+            }
+            if (ModelPool[i].RightModel) {
+              ModelPool[i].IsRightToBeSpawned = shouldBeSpawned(ModelPool[i].RightModel);
+            }
           }
         }
       }

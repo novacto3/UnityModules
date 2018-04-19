@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -30,16 +30,16 @@ namespace Leap {
     public static Frame MakeTestFrame(int frameId,
                                       bool includeLeftHand = true,
                                       bool includeRightHand = true,
-                                      TestHandPose handPose = TestHandPose.HeadMountedA) {
+                                      TestHandPose handPose = TestHandPose.HeadMountedA,
+                                      UnitType unitType = UnitType.LeapUnits) {
 
       var testFrame = new Frame(frameId, 0, 120.0f,
-                                new InteractionBox(),
                                 new List<Hand>());
 
       if (includeLeftHand)
-        testFrame.Hands.Add(MakeTestHand(true, handPose, frameId, 10));
+        testFrame.Hands.Add(MakeTestHand(true, handPose, frameId, 10, unitType));
       if (includeRightHand)
-        testFrame.Hands.Add(MakeTestHand(false, handPose, frameId, 20));
+        testFrame.Hands.Add(MakeTestHand(false, handPose, frameId, 20, unitType));
 
       return testFrame;
     }
@@ -264,9 +264,7 @@ namespace Leap {
       fingerId,
       0.0f,
       distal.NextJoint,
-      new Vector(0, 0, 0),
       forward,
-      position,
       8f,
       jointLengths[1] + jointLengths[2] + jointLengths[3],
       true,

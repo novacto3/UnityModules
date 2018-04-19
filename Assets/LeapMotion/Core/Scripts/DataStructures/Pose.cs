@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -82,7 +82,7 @@ namespace Leap.Unity {
       if (t >= 1f) return b;
       if (t <= 0f) return a;
       return new Pose(Vector3.Lerp(a.position, b.position, t),
-                      Quaternion.Slerp(a.rotation, b.rotation, t));
+                      Quaternion.Lerp(Quaternion.Slerp(a.rotation, b.rotation, t), Quaternion.identity, 0f));
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -62,7 +62,32 @@ namespace Leap.Unity {
 #if UNITY_EDITOR
     void Update() {
       if (!EditorApplication.isPlaying && SupportsEditorPersistence()) {
-        Hand hand = Handedness == Chirality.Left ? Hands.Left : Hands.Right;
+        LeapProvider provider = null;
+
+        //First try to get the provider from a parent HandModelManager
+        if (transform.parent != null) {
+          var manager = transform.parent.GetComponent<HandModelManager>();
+          if (manager != null) {
+            provider = manager.leapProvider;
+          }
+        }
+
+        //If not found, use any old provider from the Hands.Provider getter
+        if (provider == null) {
+          provider = Hands.Provider;
+        }
+
+        Hand hand = null;
+        //If we found a provider, pull the hand from that
+        if (provider != null) {
+          var frame = provider.CurrentFrame;
+
+          if (frame != null) {
+            hand = frame.Get(Handedness);
+          }
+        }
+
+        //If we still have a null hand, construct one manually
         if (hand == null) {
           hand = TestHandFactory.MakeTestHand(Handedness == Chirality.Left, unitType: TestHandFactory.UnitType.LeapUnits);
           hand.Transform(transform.GetLeapMatrix());
