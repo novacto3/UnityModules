@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using Leap.Unity;
 
 namespace Leap.Unity {
 
@@ -21,33 +22,8 @@ namespace Leap.Unity {
     protected override void OnEnable() {
       base.OnEnable();
 
-      //specifyCustomDrawer("_roomScaleHeightOffset", drawHeightOffset);
-      //specifyCustomDecorator("_roomScaleHeightOffset", decorateHeightOffset);
-    }
-
-    //private void drawHeightOffset(SerializedProperty property) {
-    //  var isRoomScale = isRoomScaleTrackingDetected();
-    //  EditorGUI.BeginDisabledGroup(isRoomScale && Application.isPlaying);
-    //  EditorGUILayout.PropertyField(property);
-    //  EditorGUI.EndDisabledGroup();
-    //}
-
-    //private void decorateHeightOffset(SerializedProperty property) {
-    //  if (isRoomScaleTrackingDetected()) {
-    //    var message = "RoomScale XR space tracking detected. The Height Offset field "
-    //                + "is unnecessary because the rig root is interpreted as the floor "
-    //                + "rather than the root for the head. The offset will be set to zero "
-    //                + "during play mode.";
-    //    EditorGUILayout.HelpBox(message, MessageType.Info);
-    //  }
-    //}
-
-    private bool isRoomScaleTrackingDetected() {
-      var trackingSpaceType = UnityEngine.XR.XRDevice.GetTrackingSpaceType();
-      if (trackingSpaceType == UnityEngine.XR.TrackingSpaceType.RoomScale) {
-        return true;
-      }
-      return false;
+      specifyConditionalDrawing(conditionalName: "recenterOnKey",
+                                dependantProperties: "recenterKey");
     }
 
   }

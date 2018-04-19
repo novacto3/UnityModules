@@ -1,8 +1,15 @@
-﻿using Leap.Unity.Query;
+/******************************************************************************
+ * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
+ * Leap Motion proprietary and confidential.                                  *
+ *                                                                            *
+ * Use subject to the terms of the Leap Motion SDK Agreement available at     *
+ * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
+ * between Leap Motion and you, your company or other organization.           *
+ ******************************************************************************/
+
+using Leap.Unity.Query;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Leap.Unity {
 
@@ -22,7 +29,7 @@ namespace Leap.Unity {
     /// used in a <code>foreach</code> statement.
     /// </summary>
     public static Slice<T> Slice<T>(this IList<T> list, int beginIdx = -1, int endIdx = -1) {
-      if (beginIdx == -1 && endIdx != -1) {
+      if (beginIdx == -1 && endIdx == -1) {
         return new Slice<T>(list, 0, list.Count);
       }
       else if (beginIdx == -1 && endIdx != -1) {
@@ -89,8 +96,12 @@ namespace Leap.Unity {
       return new IndexableStructEnumerator<T, Slice<T>>(this);
     }
 
-    public QueryWrapper<T, IndexableStructEnumerator<T, Slice<T>>> Query() {
-      return new QueryWrapper<T, IndexableStructEnumerator<T, Slice<T>>>(GetEnumerator());
+    public Query<T> Query() {
+      T[] array = ArrayPool<T>.Spawn(Count);
+      for (int i = 0; i < Count; i++) {
+        array[i] = this[i];
+      }
+      return new Query<T>(array, Count);
     }
 
     #endregion
