@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -67,7 +67,9 @@ namespace Leap.Unity {
         //First try to get the provider from a parent HandModelManager
         if (transform.parent != null) {
           var manager = transform.parent.GetComponent<HandModelManager>();
-          provider = manager.leapProvider;
+          if (manager != null) {
+            provider = manager.leapProvider;
+          }
         }
 
         //If not found, use any old provider from the Hands.Provider getter

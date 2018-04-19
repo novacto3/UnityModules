@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -23,12 +23,6 @@ namespace Leap.Unity.Packaging {
     [MenuItem("Build/Core", priority = 50)]
     public static void Build_39b6898d05b13f54082394c350c88ed1() {
       PackageDefinition.BuildPackage("39b6898d05b13f54082394c350c88ed1");
-    }
-
-    // CoreWithAndroid
-    [MenuItem("Build/CoreWithAndroid", priority = 50)]
-    public static void Build_828092ac76618d349a96555173177a8f() {
-      PackageDefinition.BuildPackage("828092ac76618d349a96555173177a8f");
     }
 
     // Detection Examples

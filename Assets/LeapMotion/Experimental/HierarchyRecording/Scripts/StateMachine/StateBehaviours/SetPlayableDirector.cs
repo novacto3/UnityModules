@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -27,6 +27,7 @@ namespace Leap.Unity.Recording {
     private DirectorWrapMode _wrapMode = DirectorWrapMode.None;
 
     private void OnEnable() {
+      _director.time = 0;
       _director.extrapolationMode = _wrapMode;
       _director.Play(_playable);
     }

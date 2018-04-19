@@ -1,6 +1,6 @@
 /******************************************************************************
  * Copyright (C) Leap Motion, Inc. 2011-2018.                                 *
- * Leap Motion proprietary and  confidential.                                 *
+ * Leap Motion proprietary and confidential.                                  *
  *                                                                            *
  * Use subject to the terms of the Leap Motion SDK Agreement available at     *
  * https://developer.leapmotion.com/sdk_agreement, or another agreement       *
@@ -45,8 +45,8 @@ namespace Leap.Unity.Interaction {
           }
           restingHeight = isToggled ? toggledRestingHeight : _originalRestingHeight;
           rigidbody.WakeUp();
-          depressedThisFrame = value;
-          unDepressedThisFrame = !value;
+          _pressedThisFrame = value;
+          _unpressedThisFrame = !value;
         }
       }
     }
