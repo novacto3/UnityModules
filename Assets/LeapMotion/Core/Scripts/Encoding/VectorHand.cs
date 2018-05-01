@@ -312,12 +312,6 @@ namespace Leap.Unity.Encoding {
 
   public static class VectorHandExtensions {
 
-    #region VectorHand Instance API
-
-    //public static void FillBytes(this VectorHand vectorHand, )
-
-    #endregion
-
     #region Utilities
 
     /// <summary>
