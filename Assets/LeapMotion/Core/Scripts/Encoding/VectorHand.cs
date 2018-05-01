@@ -23,7 +23,7 @@ namespace Leap.Unity.Encoding {
   /// TODO: CurlHand not yet brought in from Networking module!
   /// </summary>
   [Serializable]
-  public class VectorHand {
+  public class VectorHand : IByteEncodable<Hand> {
 
     #region Data
 
@@ -46,6 +46,8 @@ namespace Leap.Unity.Encoding {
 
     #endregion
 
+    #region Constructors
+
     public VectorHand() { }
 
     /// <summary>
@@ -58,7 +60,9 @@ namespace Leap.Unity.Encoding {
       Encode(hand);
     }
 
-    #region Hand Encoding
+    #endregion
+
+    #region IEncodable<Hand>
 
     public void Encode(Hand fromHand) {
       isLeft = fromHand.IsLeft;
@@ -67,11 +71,11 @@ namespace Leap.Unity.Encoding {
 
       int boneIdx = 0;
       for (int i = 0; i < 5; i++) {
-        Vector3 baseMetacarpal = ToLocal(fromHand.Fingers[i].bones[0].PrevJoint.ToVector3(),
+        Vector3 baseMetacarpal = toLocal(fromHand.Fingers[i].bones[0].PrevJoint.ToVector3(),
                                          palmPos, palmRot);
         jointPositions[boneIdx++] = baseMetacarpal;
         for (int j = 0; j < 4; j++) {
-          Vector3 joint = ToLocal(fromHand.Fingers[i].bones[j].NextJoint.ToVector3(),
+          Vector3 joint = toLocal(fromHand.Fingers[i].bones[j].NextJoint.ToVector3(),
                                   palmPos, palmRot);
           jointPositions[boneIdx++] = joint;
         }
@@ -105,8 +109,8 @@ namespace Leap.Unity.Encoding {
           }
         
           // Convert to world space from palm space.
-          nextJoint = ToWorld(nextJoint, palmPos, palmRot);
-          prevJoint = ToWorld(prevJoint, palmPos, palmRot);
+          nextJoint = toWorld(nextJoint, palmPos, palmRot);
+          prevJoint = toWorld(prevJoint, palmPos, palmRot);
           boneRot = palmRot * boneRot;
 
           intoHand.GetBone(boneIdx).Fill(
@@ -133,9 +137,9 @@ namespace Leap.Unity.Encoding {
       }
 
       // Fill arm data.
-      intoHand.Arm.Fill(ToWorld(new Vector3(0f, 0f, -0.3f), palmPos, palmRot).ToVector(),
-                      ToWorld(new Vector3(0f, 0f, -0.055f), palmPos, palmRot).ToVector(),
-                      ToWorld(new Vector3(0f, 0f, -0.125f), palmPos, palmRot).ToVector(),
+      intoHand.Arm.Fill(toWorld(new Vector3(0f, 0f, -0.3f), palmPos, palmRot).ToVector(),
+                      toWorld(new Vector3(0f, 0f, -0.055f), palmPos, palmRot).ToVector(),
+                      toWorld(new Vector3(0f, 0f, -0.125f), palmPos, palmRot).ToVector(),
                       Vector.Zero,
                       0.3f,
                       0.05f,
@@ -159,14 +163,14 @@ namespace Leap.Unity.Encoding {
                   palmNormal:             (palmRot * Vector3.down).ToVector(),
                   rotation:               (palmRot.ToLeapQuaternion()),
                   direction:              (palmRot * Vector3.forward).ToVector(),
-                  wristPosition:          ToWorld(new Vector3(0f, 0f, -0.055f),
+                  wristPosition:          toWorld(new Vector3(0f, 0f, -0.055f),
                                                   palmPos,
                                                   palmRot).ToVector());
     }
 
     #endregion
 
-    #region Byte Encoding & Decoding
+    #region IByteEncodable<Hand>
 
     /// <summary>
     /// The number of bytes required to encode a VectorHand into its byte representation.
@@ -252,45 +256,15 @@ namespace Leap.Unity.Encoding {
       }
     }
 
-    /// <summary>
-    /// Fills the provided byte array with a compressed, 86-byte form of this VectorHand.
-    /// 
-    /// Throws an IndexOutOfRangeException if the provided byte array doesn't have enough
-    /// space to write the number of bytes required (see VectorHand.BYTE_ENCODING_SIZE).
-    /// </summary>
-    public void FillBytes(byte[] bytesToFill) {
-      int unusedOffset = 0;
-      FillBytes(bytesToFill, ref unusedOffset);
-    }
-
-
-    /// <summary>
-    /// Shortcut for reading a VectorHand-encoded byte representation of a Leap hand and
-    /// decoding it immediately into a Hand object.
-    /// </summary>
-    public void ReadBytes(byte[] bytes, ref int offset, Hand intoHand) {
-      ReadBytes(bytes, ref offset);
-      Decode(intoHand);
-    }
-
-    /// <summary>
-    /// Shortcut for encoding a Leap hand into a VectorHand representation and
-    /// compressing it immediately into a byte representation.
-    /// </summary>
-    public void FillBytes(byte[] bytes, ref int offset, Hand fromHand) {
-      Encode(fromHand);
-      FillBytes(bytes, ref offset);
-    }
-
     #endregion
 
-    #region Utility
+    #region Helper Methods
 
     /// <summary>
     /// Converts a local-space point to a world-space point given the local space's
     /// origin and rotation.
     /// </summary>
-    public static Vector3 ToWorld(Vector3 localPoint,
+    private static Vector3 toWorld(Vector3 localPoint,
                                   Vector3 localOrigin, Quaternion localRot) {
       return (localRot * localPoint) + localOrigin;
     }
@@ -299,7 +273,7 @@ namespace Leap.Unity.Encoding {
     /// Converts a world-space point to a local-space point given the local space's
     /// origin and rotation.
     /// </summary>
-    public static Vector3 ToLocal(Vector3 worldPoint,
+    private static Vector3 toLocal(Vector3 worldPoint,
                                   Vector3 localOrigin, Quaternion localRot) {
       return Quaternion.Inverse(localRot) * (worldPoint - localOrigin);
     }
@@ -308,7 +282,7 @@ namespace Leap.Unity.Encoding {
 
   }
 
-  #region Utility Extension Methods
+  #region Helper Extension Methods
 
   public static class VectorHandExtensions {
 
