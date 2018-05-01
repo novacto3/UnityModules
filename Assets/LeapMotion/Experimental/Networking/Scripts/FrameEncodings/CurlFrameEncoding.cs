@@ -32,7 +32,17 @@ namespace Leap.Unity.Networking {
       pos = inHand.PalmPosition.ToVector3();
       rot = inHand.Rotation.ToQuaternion();
       curl = isLeft ? LCurl : RCurl;//new byte[6];
-      curl[0] = (byte)(Mathf.Clamp01(((Vector3.Dot(inHand.Basis.xBasis.ToVector3() * (isLeft ? -1f : 1f), inHand.Fingers[0].Direction.ToVector3()) + 1f) / 2f) - 0.1f) * 255f);
+      curl[0] = (byte)(
+        Mathf.Clamp01(
+          (
+            (Vector3.Dot(
+              inHand.Basis.xBasis.ToVector3()
+                * (isLeft ? -1f : 1f),
+              inHand.Fingers[0].Direction.ToVector3())
+            + 1f) / 2f
+          ) - 0.1f
+        ) * 255f
+      );
       float spread = -0.5f;
       for (int i = 1; i < 5; i++) {
         curl[i] = (byte)(Mathf.Clamp01(1f - ((Vector3.Dot(inHand.Direction.ToVector3(), inHand.Fingers[i].Direction.ToVector3()) + 1f) / 2f)) * 255f);

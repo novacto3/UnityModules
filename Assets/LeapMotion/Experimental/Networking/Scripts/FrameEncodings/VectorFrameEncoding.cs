@@ -236,5 +236,6 @@ namespace Leap.Unity.Networking {
       //fillByteArray(); //Call before sending deserialized frame over the network
     }*/
     #endregion
+
   }
 }
