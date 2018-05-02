@@ -124,12 +124,12 @@ GameObject:
   - component: {fileID: 145186769}
   - component: {fileID: 145186768}
   m_Layer: 0
-  m_Name: CurlHand Hand Models
+  m_Name: Encoded Hand Models
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &145186767
 Transform:
   m_ObjectHideFlags: 0
@@ -181,6 +181,7 @@ MonoBehaviour:
   _inputLeapProvider: {fileID: 1267071315}
   dataUpdateMode: 0
   passthroughOnly: 0
+  _encodingType: Leap.Unity.Encoding.CurlHand
 --- !u!1 &172343938
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +296,7 @@ MonoBehaviour:
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 1784654002}
     IsRightToBeSpawned: 0
-    IsEnabled: 0
+    IsEnabled: 1
     CanDuplicate: 0
 --- !u!1001 &475644817
 Prefab:
@@ -472,7 +473,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &879694406
 Transform:
   m_ObjectHideFlags: 0
@@ -493,7 +494,7 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 879694405}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 27476d622d49bab41a86b9fff05af58e, type: 3}
   m_Name: 
@@ -624,7 +625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1346008096
 Transform:
   m_ObjectHideFlags: 0
@@ -685,7 +686,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1784654000
 Transform:
   m_ObjectHideFlags: 0

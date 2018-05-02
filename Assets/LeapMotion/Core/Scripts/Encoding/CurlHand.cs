@@ -52,6 +52,32 @@ namespace Leap.Unity.Encoding {
 
     #endregion
 
+    #region Static Data
+
+    /// <summary>
+    /// TestHandFactory-generated left hand. Used for getting reasonable e.g. base bone 
+    /// lengths.
+    /// </summary>
+    private static readonly Hand defaultLeft;
+
+    /// <summary>
+    /// TestHandFactory-generated right hand. Used for getting reasonable e.g. base bone 
+    /// lengths.
+    /// </summary>
+    private static readonly Hand defaultRight;
+
+    /// <summary>
+    /// CurlHand uses the Test Hand from the TestHandFactory for a reasonable "base" hand.
+    /// </summary>
+    static CurlHand() {
+      defaultLeft = TestHandFactory.MakeTestHand(
+        isLeft: true, frameId: -1, unitType: TestHandFactory.UnitType.UnityUnits);
+      defaultRight = TestHandFactory.MakeTestHand(
+        isLeft: false, frameId: -1, unitType: TestHandFactory.UnitType.UnityUnits);
+    }
+
+    #endregion
+
     #region Constructors
 
     public CurlHand() { }

@@ -44,18 +44,13 @@ namespace Leap.Unity.Networking {
         networkDataProvider = handController.gameObject.AddComponent<LeapStreamingProvider>();
         //Destroy(handController.parent.GetComponent<LeapXRTemporalWarping>());
         switch (frameEncodingType) {
-          case FrameEncodingEnum.VectorHand:
-            playerState = new VectorFrameEncoding();
-            networkDataProvider.lerpState = new VectorFrameEncoding();
-            networkDataProvider.prevState = new VectorFrameEncoding();
-            networkDataProvider.currentState = new VectorFrameEncoding();
-            break;
           case FrameEncodingEnum.CurlHand:
             playerState = new CurlFrameEncoding();
             networkDataProvider.lerpState = new CurlFrameEncoding();
             networkDataProvider.prevState = new CurlFrameEncoding();
             networkDataProvider.currentState = new CurlFrameEncoding();
             break;
+          case FrameEncodingEnum.VectorHand:
           default:
             playerState = new VectorFrameEncoding();
             networkDataProvider.lerpState = new VectorFrameEncoding();
