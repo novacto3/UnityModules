@@ -17,7 +17,43 @@ namespace Leap.Unity.Tests {
 
     const float TOLERANCE = 0.01f; // 1 cm for all positions.
 
-    public void HandEncodeDecodeTest<T>() where T : IByteEncodable<Hand>, new() {
+    public void HandEncodeDecodeTest<T>() where T : IEncodable<Hand>, new() {
+
+      Frame frame = TestHandFactory.MakeTestFrame(0, includeLeftHand: true,
+        includeRightHand: true, unitType: TestHandFactory.UnitType.UnityUnits);
+
+      foreach (var hand in frame.Hands) {
+        var tHand = new T();
+
+        tHand.Encode(hand);
+
+        Hand result = new Hand();
+        tHand.Decode(result);
+
+        Assert.That(result.IsLeft, Is.EqualTo(hand.IsLeft));
+        Assert.That((result.PalmPosition - hand.PalmPosition).Magnitude,
+          Is.LessThan(TOLERANCE));
+
+        foreach (var resultFinger in result.Fingers) {
+          var finger = hand.Fingers.Single(f => f.Type == resultFinger.Type);
+
+          for (int i = 0; i < 4; i++) {
+            Bone resultBone = resultFinger.bones[i];
+            Bone bone = finger.bones[i];
+
+            Assert.That((resultBone.NextJoint - bone.NextJoint).Magnitude,
+              Is.LessThan(TOLERANCE));
+            Assert.That((resultBone.PrevJoint - bone.PrevJoint).Magnitude,
+              Is.LessThan(TOLERANCE));
+            Assert.That((resultBone.Center - bone.Center).Magnitude,
+              Is.LessThan(TOLERANCE));
+          }
+        }
+      }
+
+    }
+
+    public void HandEncodeDecodeWithBytesTest<T>() where T : IByteEncodable<Hand>, new() {
 
       Frame frame = TestHandFactory.MakeTestFrame(0, includeLeftHand: true,
         includeRightHand: true, unitType: TestHandFactory.UnitType.UnityUnits);
@@ -73,10 +109,24 @@ namespace Leap.Unity.Tests {
     }
 
     [Test]
-    public void CurlHandEncodeDecodeTest() { HandEncodeDecodeTest<CurlHand>(); }
+    public void CurlHandEncodeDecodeTest() {
+      HandEncodeDecodeTest<CurlHand>();
+    }
 
     [Test]
-    public void VectorHandEncodeDecodeTest() { HandEncodeDecodeTest<VectorHand>(); }
+    public void CurlHandEncodeDecodeWithBytesTest() {
+      HandEncodeDecodeWithBytesTest<CurlHand>();
+    }
+
+    [Test]
+    public void VectorHandEncodeDecodeTest() {
+      HandEncodeDecodeTest<VectorHand>();
+    }
+
+    [Test]
+    public void VectorHandEncodeDecodeWithBytesTest() {
+      HandEncodeDecodeWithBytesTest<VectorHand>();
+    }
 
   }
 

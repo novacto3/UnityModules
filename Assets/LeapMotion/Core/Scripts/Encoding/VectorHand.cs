@@ -7,6 +7,7 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
+using Leap.Unity.Query;
 using System;
 using UnityEngine;
 
@@ -127,45 +128,49 @@ namespace Leap.Unity.Encoding {
           frameId: -1,
           handId: (isLeft ? 0 : 1),
           fingerId: fingerIdx,
-          timeVisible: Time.time,
+          timeVisible: 0f,
           tipPosition: nextJoint.ToVector(),
           direction: (boneRot * Vector3.forward).ToVector(),
-          width: 1f,
-          length: 1f,
+          width: 0.01f,
+          length: intoHand.Fingers[fingerIdx].bones.Query()
+                    .Select(b => b.Length).Fold((l, acc) => l + acc),
           isExtended: true,
-          type: (Finger.FingerType)fingerIdx);
+          type: (Finger.FingerType)fingerIdx
+        );
       }
 
       // Fill arm data.
-      intoHand.Arm.Fill(toWorld(new Vector3(0f, 0f, -0.3f), palmPos, palmRot).ToVector(),
-                      toWorld(new Vector3(0f, 0f, -0.055f), palmPos, palmRot).ToVector(),
-                      toWorld(new Vector3(0f, 0f, -0.125f), palmPos, palmRot).ToVector(),
-                      Vector.Zero,
-                      0.3f,
-                      0.05f,
-                      (palmRot).ToLeapQuaternion());
+      intoHand.Arm.Fill(
+        elbow: toWorld(new Vector3(0f, 0f, -0.3f), palmPos, palmRot).ToVector(),
+        wrist: toWorld(new Vector3(0f, 0f, -0.055f), palmPos, palmRot).ToVector(),
+        center: toWorld(new Vector3(0f, 0f, -0.125f), palmPos, palmRot).ToVector(),
+        direction: Vector.Zero,
+        length: 0.3f,
+        width: 0.05f,
+        rotation: (palmRot).ToLeapQuaternion());
 
       // Finally, fill hand data.
-      intoHand.Fill(frameID:                -1,
-                  id:                     (isLeft ? 0 : 1),
-                  confidence:             1f,
-                  grabStrength:           0.5f,
-                  grabAngle:              100f,
-                  pinchStrength:          0.5f,
-                  pinchDistance:          50f,
-                  palmWidth:              0.085f,
-                  isLeft:                 isLeft,
-                  timeVisible:            1f,
-                  fingers:                null /* already uploaded finger data */,
-                  palmPosition:           palmPos.ToVector(),
-                  stabilizedPalmPosition: palmPos.ToVector(),
-                  palmVelocity:           Vector3.zero.ToVector(),
-                  palmNormal:             (palmRot * Vector3.down).ToVector(),
-                  rotation:               (palmRot.ToLeapQuaternion()),
-                  direction:              (palmRot * Vector3.forward).ToVector(),
-                  wristPosition:          toWorld(new Vector3(0f, 0f, -0.055f),
-                                                  palmPos,
-                                                  palmRot).ToVector());
+      intoHand.Fill(
+        frameID:               -1,
+        id:                     (isLeft ? 0 : 1),
+        confidence:             1f,
+        grabStrength:           0.5f,
+        grabAngle:              100f,
+        pinchStrength:          0.5f,
+        pinchDistance:          50f,
+        palmWidth:              0.085f,
+        isLeft:                 isLeft,
+        timeVisible:            1f,
+        fingers:                null /* already uploaded finger data */,
+        palmPosition:           palmPos.ToVector(),
+        stabilizedPalmPosition: palmPos.ToVector(),
+        palmVelocity:           Vector3.zero.ToVector(),
+        palmNormal:             (palmRot * Vector3.down).ToVector(),
+        rotation:               (palmRot.ToLeapQuaternion()),
+        direction:              (palmRot * Vector3.forward).ToVector(),
+        wristPosition:          toWorld(new Vector3(0f, 0f, -0.055f),
+                                        palmPos,
+                                        palmRot).ToVector());
     }
 
     #endregion

@@ -34,19 +34,21 @@ namespace Leap.Unity.Networking {
       curl = isLeft ? LCurl : RCurl;//new byte[6];
       curl[0] = (byte)(
         Mathf.Clamp01(
-          (
-            (Vector3.Dot(
-              inHand.Basis.xBasis.ToVector3()
-                * (isLeft ? -1f : 1f),
-              inHand.Fingers[0].Direction.ToVector3())
-            + 1f) / 2f
-          ) - 0.1f
+          ((Vector3.Dot(inHand.Basis.xBasis.ToVector3() * (isLeft ? -1f : 1f),
+                        inHand.Fingers[0].Direction.ToVector3()) + 1f) / 2f)
+          - 0.1f
         ) * 255f
       );
       float spread = -0.5f;
       for (int i = 1; i < 5; i++) {
-        curl[i] = (byte)(Mathf.Clamp01(1f - ((Vector3.Dot(inHand.Direction.ToVector3(), inHand.Fingers[i].Direction.ToVector3()) + 1f) / 2f)) * 255f);
-        spread += Mathf.Abs((Quaternion.Inverse(inHand.Rotation.ToQuaternion()) * inHand.Fingers[i].Direction.ToVector3()).x);
+        curl[i] = (byte)(
+          Mathf.Clamp01(
+            1f - ((Vector3.Dot(inHand.Direction.ToVector3(),
+                               inHand.Fingers[i].Direction.ToVector3()) + 1f) / 2f)
+          ) * 255f
+        );
+        spread += Mathf.Abs((Quaternion.Inverse(inHand.Rotation.ToQuaternion())
+                            * inHand.Fingers[i].Direction.ToVector3()).x);
       }
       curl[5] = (byte)(Mathf.Clamp01(spread) * 255f);
     }
@@ -152,39 +154,59 @@ namespace Leap.Unity.Networking {
     #region Decoding Functions
     //Uses the interpolable data to reconstruct and fill a hand object
     void DecodeHand(long frameID, List<Finger>[] fingers, bool c, Vector3 p, Quaternion r, Bone[] bones, byte[] fingerCurls, Hand outHand) {
-      for (int i = 0; i < 5; i++) {
-        Vector3 PrevJoint;
-        Vector3 NextJoint = Vector3.zero;
+
+      for (int f = 0; f < 5; f++) {
+        Vector3 prevJoint;
+        Vector3 nextJoint = Vector3.zero;
         //Finger Spread
         Quaternion boneRot = Quaternion.identity;
         for (int j = 0; j < 4; j++) {
-          if (j == 0 && i > 0) {
+          if (j == 0 && f > 0) {
             //4 Top Knuckles
-            NextJoint = new Vector3(-i * 0.021f + 0.043f + (i == 4 ? 0.005f : 0f), (i > 1 ? 0.01f : 0f), 0.02f - (i > 2 ? 0.007f : 0f));
-            PrevJoint = new Vector3(-i * 0.015f + 0.04f, -0.015f, -0.05f);
-            boneRot = Quaternion.Euler(0f, (i == 0 ? 75 : ((i * -7f + 15f))), 0f);
-          } else if (i == 0 && j == 0) {
+            nextJoint = new Vector3(-f * 0.021f + 0.043f + (f == 4 ? 0.005f : 0f),
+              (f > 1 ? 0.01f : 0f),
+              0.02f - (f > 2 ? 0.007f : 0f));
+            prevJoint = new Vector3(-f * 0.015f + 0.04f,
+              -0.015f,
+              -0.05f);
+            boneRot = Quaternion.Euler(0f,
+              (f == 0 ? 75 : ((f * -7f + 15f))),
+              0f);
+          }
+          else if (f == 0 && j == 0) {
             //Thumb "Knuckle"
-            NextJoint = new Vector3(0.02f, -0.015f, -0.05f);
-            PrevJoint = new Vector3(0.01f, -0.015f, -0.055f);
+            nextJoint = new Vector3(0.02f, -0.015f, -0.05f);
+            prevJoint = new Vector3(0.01f, -0.015f, -0.055f);
             boneRot = Quaternion.Euler(30f, 50, -90f);
-          } else {
+          }
+          else {
             //Main Fingers
             //Finger Curl
-            if (j == 1 && i > 0) {
-              boneRot = Quaternion.Euler((i == 0 ? 60f : 70f) * ((float)fingerCurls[i]) / 256f, j == 1 ? (i == 0 ? 75 : ((i * -7f + 15f) * (((float)fingerCurls[5]) / 256f) * 3f)) : 0f, 0f);
-            } else {
-              boneRot *= Quaternion.Euler((i == 0 ? 60f : 70f) * ((float)fingerCurls[i]) / 256f, 0f, 0f);
+            if (j == 1 && f > 0) {
+              boneRot = Quaternion.Euler(
+                (f == 0 ? 60f : 70f) * ((float)fingerCurls[f]) / 256f,
+                j == 1 ?
+                  (f == 0 ?
+                    75
+                    : ((f * -7f + 15f) * (((float)fingerCurls[5]) / 256f) * 3f))
+                  : 0f,
+                0f);
             }
-            PrevJoint = NextJoint;
-            NextJoint = NextJoint + (boneRot * new Vector3(0.0f, 0f, (i == 0 ? 0.055f : 0.045f) / (j)));
+            else {
+              boneRot *= Quaternion.Euler(
+                (f == 0 ? 60f : 70f) * ((float)fingerCurls[f]) / 256f, 0f, 0f);
+            }
+            prevJoint = nextJoint;
+            nextJoint = nextJoint
+              + (boneRot * new Vector3(0.0f, 0f, (f == 0 ? 0.055f : 0.045f) / (j)));
           }
+
           //Fix for Rigged Hands
           Quaternion meshRot = boneRot;
-          meshRot = Quaternion.Euler(boneRot.eulerAngles.x, (c ? 1f : -1f) * boneRot.eulerAngles.y, (!c && (i == 0) ? -1f : 1f) * boneRot.eulerAngles.z);
-          fillBone(bones[(i * 4) + j], ToWorld(PrevJoint, p, r, c).ToVector(), ToWorld(NextJoint, p, r, c).ToVector(), (ToWorld(NextJoint + PrevJoint, p, r, c) / 2f).ToVector(), p.ToVector(), 1f, 1f, (Bone.BoneType)j, (r * meshRot).ToLeapQuaternion());
+          meshRot = Quaternion.Euler(boneRot.eulerAngles.x, (c ? 1f : -1f) * boneRot.eulerAngles.y, (!c && (f == 0) ? -1f : 1f) * boneRot.eulerAngles.z);
+          fillBone(bones[(f * 4) + j], ToWorld(prevJoint, p, r, c).ToVector(), ToWorld(nextJoint, p, r, c).ToVector(), (ToWorld(nextJoint + prevJoint, p, r, c) / 2f).ToVector(), p.ToVector(), 1f, 1f, (Bone.BoneType)j, (r * meshRot).ToLeapQuaternion());
         }
-        fillFinger(fingers[c ? 0 : 1][i], frameID, (c ? 0 : 1), i, Time.time, ToWorld(NextJoint, p, r, c).ToVector(), Vector.Zero, (boneRot * Vector3.forward).ToVector(), ToWorld(NextJoint, p, r, c).ToVector(), 1f, 1f, true, (Finger.FingerType)i, bones[(i * 4) + 0], bones[(i * 4) + 1], bones[(i * 4) + 2], bones[(i * 4) + 3]);
+        fillFinger(fingers[c ? 0 : 1][f], frameID, (c ? 0 : 1), f, Time.time, ToWorld(nextJoint, p, r, c).ToVector(), Vector.Zero, (boneRot * Vector3.forward).ToVector(), ToWorld(nextJoint, p, r, c).ToVector(), 1f, 1f, true, (Finger.FingerType)f, bones[(f * 4) + 0], bones[(f * 4) + 1], bones[(f * 4) + 2], bones[(f * 4) + 3]);
       }
 
       Vector3 palm = p;
