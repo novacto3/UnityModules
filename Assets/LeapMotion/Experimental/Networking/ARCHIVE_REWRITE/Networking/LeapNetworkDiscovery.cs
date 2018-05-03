@@ -1,26 +1,31 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
-using System;
 
 namespace Leap.Unity.Networking {
-  public class LeapNetworkDiscovery : NetworkDiscovery {
-    bool Server = false;
-    NetworkManager NetManager;
 
-    // Use this for initialization
-    void Start() {
-      Server = ServerState.isServer;
-      NetManager = NetworkManager.singleton;
+  /// <summary>
+  /// A basic networking utility implementation for discovering peers across the network.
+  /// </summary>
+  public class LeapNetworkDiscovery : NetworkDiscovery {
+
+    bool isServer = false; // TODO: DELETEME
+    public int port = 7777;
+    NetworkManager networkManager;
+    
+    private void Start() {
+      isServer = ServerState.isServer;
+      networkManager = NetworkManager.singleton;
+
       Initialize();
-      if (!Server) {
+
+      if (!isServer) {
         StartAsClient();
         //NetManager.StartClient();
       } else {
         StartAsServer();
-        NetManager.StartHost();
+        networkManager.StartHost();
       }
-      if (isServer) {
+      if (base.isServer) {
         enabled = false;
       }
     }
@@ -30,11 +35,12 @@ namespace Leap.Unity.Networking {
 
       if (NetworkManager.singleton != null && NetworkManager.singleton.client == null) {
         Debug.Log(fromAddress + "/" + data);
+
         NetworkManager.singleton.networkAddress = fromAddress.Remove(0, 7);
-        NetworkManager.singleton.networkPort = 7777;// Convert.ToInt32(data);
+        NetworkManager.singleton.networkPort = port;// Convert.ToInt32(data);
         NetworkManager.singleton.StartClient();
-        //StopBroadcast();
-        if (!isServer) {
+        
+        if (!base.isServer) {
           enabled = false;
         }
       }
