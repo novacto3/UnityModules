@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Leap.Unity.Networking {
+namespace Leap.Unity.Networking.Examples {
 
   /// <summary>
   /// A basic networking utility implementation for discovering peers across the network.
@@ -20,7 +20,7 @@ namespace Leap.Unity.Networking {
 
       if (!isServer) {
         StartAsClient();
-        //NetManager.StartClient();
+        // See OnReceivedBroadcast for the StartClient() call.
       } else {
         StartAsServer();
         networkManager.StartHost();
