@@ -3906,6 +3906,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114000010742100504
@@ -3963,6 +3964,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114000010909168164
@@ -4009,6 +4011,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114000011241829862
@@ -4033,6 +4036,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114000011371482648
@@ -4057,6 +4061,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114000011384431544
@@ -4070,20 +4075,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ea79be653ce14db8969d7225d95ec6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group:
-    GroupName: 
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    IsEnabled: 1
-    CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   handedness: 0
   handModelPalmWidth: 0.085
   fingers:
@@ -4173,6 +4164,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114000011707696434
@@ -4205,20 +4197,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e0ed5922e911b343b8400997c95409c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group:
-    GroupName: 
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    IsEnabled: 1
-    CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   handedness: 0
   handModelPalmWidth: 0.085
   fingers:
@@ -4236,6 +4214,7 @@ MonoBehaviour:
   deformPositionsState: 0
   ModelPalmAtLeapWrist: 1
   UseMetaCarpals: 1
+  _scaleLastFingerBones: 1
   modelFingerPointing: {x: -1, y: -0, z: -0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
   jointList: []
@@ -4285,6 +4264,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114000012264558024
@@ -4397,34 +4377,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c592f16851a620743868a31232613370, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _modelsParent: {fileID: 4000012347831172}
+  _leapProvider: {fileID: 0}
   ModelPool:
   - GroupName: Graphics
-    _handPool: {fileID: 0}
+    _handModelManager: {fileID: 0}
     LeftModel: {fileID: 114000011731427298}
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 114000013245830548}
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   - GroupName: Physics
-    _handPool: {fileID: 0}
+    _handModelManager: {fileID: 0}
     LeftModel: {fileID: 114000011384431544}
     IsLeftToBeSpawned: 0
     RightModel: {fileID: 114000013939970292}
     IsRightToBeSpawned: 0
     IsEnabled: 1
     CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
 --- !u!114 &114000012932882326
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4436,8 +4406,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8321e4bfb1a93640a4fdb2a7dc2cf8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FrameEncodingType: 0
-  HandController: {fileID: 4000013719490560}
+  frameEncodingType: 0
+  handController: {fileID: 0}
 --- !u!114 &114000012980249718
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4503,6 +4473,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: -1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: 1, z: 0}
 --- !u!114 &114000013191644850
@@ -4527,6 +4498,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114000013245830548
@@ -4540,20 +4512,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e0ed5922e911b343b8400997c95409c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group:
-    GroupName: 
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    IsEnabled: 1
-    CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   handedness: 1
   handModelPalmWidth: 0.085
   fingers:
@@ -4571,6 +4529,7 @@ MonoBehaviour:
   deformPositionsState: 0
   ModelPalmAtLeapWrist: 1
   UseMetaCarpals: 1
+  _scaleLastFingerBones: 1
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
   jointList: []
@@ -4625,20 +4584,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ea79be653ce14db8969d7225d95ec6c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  group:
-    GroupName: 
-    _handPool: {fileID: 0}
-    LeftModel: {fileID: 0}
-    IsLeftToBeSpawned: 0
-    RightModel: {fileID: 0}
-    IsRightToBeSpawned: 0
-    IsEnabled: 1
-    CanDuplicate: 0
-    HandPostProcesses:
-      m_PersistentCalls:
-        m_Calls: []
-      m_TypeName: Leap.Unity.Hands+HandEvent, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-        PublicKeyToken=null
   handedness: 1
   handModelPalmWidth: 0.085
   fingers:
@@ -4674,6 +4619,7 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   deformPosition: 0
+  scaleLastFingerBone: 0
   modelFingerPointing: {x: 1, y: 0, z: 0}
   modelPalmFacing: {x: 0, y: -1, z: 0}
 --- !u!114 &114000014249294438

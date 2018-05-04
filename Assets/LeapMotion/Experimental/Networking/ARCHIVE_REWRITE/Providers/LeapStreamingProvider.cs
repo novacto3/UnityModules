@@ -1,28 +1,27 @@
 ﻿using UnityEngine;
-using UnityEngine.Networking;
-using System;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
-using Leap;
-using Leap.Unity.Graphing;
 
 namespace Leap.Unity.Networking {
+
   public class LeapStreamingProvider : LeapEncodingProvider {
+
     //[NonSerialized]
     public FrameEncoding prevState;
+
     //[NonSerialized]
     public FrameEncoding lerpState;
-    Queue<byte[]> stateBuffer;
+
+    private Queue<byte[]> stateBuffer;
 
     //Interpolation Properties
-    float interpolationTime = 0f;
-    float sampleInterval = 0.035f;
-    float lastTimeFrameAdded = 0f;
-    byte[] temp;
+    private float interpolationTime = 0f;
+    private float sampleInterval = 0.035f;
+    private float lastTimeFrameAdded = 0f;
+    private byte[] temp;
 
     public override void Start() {
       base.Start();
+
       stateBuffer = new Queue<byte[]>();
     }
 
@@ -56,5 +55,6 @@ namespace Leap.Unity.Networking {
       fillCurrentFrame(lerpState);
       DispatchUpdateFrameEvent(CurrentFrame);
     }
+
   }
 }
