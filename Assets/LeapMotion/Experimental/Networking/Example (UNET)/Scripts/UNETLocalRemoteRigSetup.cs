@@ -38,6 +38,8 @@ namespace Leap.Unity.Networking.Examples {
 
     private void setupRigRemote() {
 
+
+      //var provider = rigCamera.gameObject.AddComponent<LeapUNETStreamProvider>
     }
 
   }
