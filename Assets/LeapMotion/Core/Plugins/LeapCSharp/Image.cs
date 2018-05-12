@@ -145,6 +145,9 @@ namespace Leap {
     public static Vector PixelToRectilinear(CameraType camera, Vector pixel) {
       return Connection.GetConnection().PixelToRectilinear(camera, pixel);
     }
+    public static Vector PixelToRectilinear(CameraType camera, Vector pixel, Connection connection) {
+      return connection.PixelToRectilinear(camera, pixel);
+    }
 
     /// <summary>
     /// Provides the point in the image corresponding to a ray projecting
@@ -173,6 +176,9 @@ namespace Leap {
     /// </summary>
     public static Vector RectilinearToPixel(CameraType camera, Vector ray) {
       return Connection.GetConnection().RectilinearToPixel(camera, ray);
+    }
+    public static Vector RectilinearToPixel(CameraType camera, Vector ray, Connection connection) {
+      return connection.RectilinearToPixel(camera, ray);
     }
 
     /// <summary>
