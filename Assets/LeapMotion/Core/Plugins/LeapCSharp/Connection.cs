@@ -12,7 +12,6 @@ namespace LeapInternal {
   using System.Collections.Generic;
   using System.Runtime.InteropServices;
   using System.Threading;
-
   using Leap;
 
   public class Connection {
@@ -450,9 +449,6 @@ namespace LeapInternal {
       if (result != eLeapRS.eLeapRS_Success)
         return;
 
-      deviceInfo.serial = Marshal.AllocCoTaskMem((int)deviceInfo.serial_length);
-      result = LeapC.GetDeviceInfo(device, ref deviceInfo); //Query the serial
-
       if (result == eLeapRS.eLeapRS_Success) {
         Device apiDevice = new Device(deviceHandle,
                                deviceInfo.h_fov, //radians
@@ -461,8 +457,7 @@ namespace LeapInternal {
                                deviceInfo.baseline / 1000.0f, //to mm
                                (Device.DeviceType)deviceInfo.type,
                                (deviceInfo.status == eLeapDeviceStatus.eLeapDeviceStatus_Streaming),
-                               Marshal.PtrToStringAnsi(deviceInfo.serial));
-        Marshal.FreeCoTaskMem(deviceInfo.serial);
+                               "UNKNOWN");
         _devices.AddOrUpdate(apiDevice);
 
         if (LeapDevice != null) {

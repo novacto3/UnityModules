@@ -4,4 +4,7 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/LeapMotion/Internal/VRVisualizer/VRVisualizer.unity
+    guid: 931267b3043e89648b109eef91b63344
