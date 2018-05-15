@@ -11,7 +11,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 namespace Leap.Unity {
-  public class ReprojectHandUVs : MonoBehaviour {
+  public class ReprojectUVs : MonoBehaviour {
     public LeapImageRetriever imageRetriever;
     public LeapXRServiceProvider provider;
     public enum DeviceType { Peripheral, Rigel, Custom };
@@ -31,8 +31,8 @@ namespace Leap.Unity {
       _skin = GetComponent<SkinnedMeshRenderer>();
       _skin.BakeMesh(_mesh);
       _vertices = new List<Vector3>(_mesh.vertexCount);
-      _mesh.GetVertices(_vertices);
       _uvs = new List<Vector2>(_mesh.vertexCount);
+      _mesh.GetVertices(_vertices);
       _mesh.GetUVs(0, _uvs);
       _rightCamera = new GameObject("RightCamera");
       _rightCamera.transform.SetParent(provider.transform);
