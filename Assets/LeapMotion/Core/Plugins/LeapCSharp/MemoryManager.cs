@@ -93,7 +93,11 @@ namespace LeapInternal {
 
         return ptr;
       } catch (Exception e) {
+#if UNITY_5_6_OR_NEWER
         UnityEngine.Debug.LogException(e);
+#else
+        System.Diagnostics.Debug.WriteLine(e);
+#endif
       }
 
       return IntPtr.Zero;
@@ -114,7 +118,11 @@ namespace LeapInternal {
         //Finally we unpin the memory
         info.handle.Free();
       } catch (Exception e) {
+#if UNITY_5_6_OR_NEWER
         UnityEngine.Debug.LogException(e);
+#else
+        System.Diagnostics.Debug.WriteLine(e);
+#endif
       }
     }
 

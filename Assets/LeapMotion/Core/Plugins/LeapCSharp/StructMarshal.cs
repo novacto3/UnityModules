@@ -63,7 +63,11 @@ namespace LeapInternal {
         Marshal.PtrToStructure(ptr, _container);
         t = _container.value;
       } catch (Exception e) {
+#if UNITY_5_6_OR_NEWER
         UnityEngine.Debug.LogException(e);
+#else
+        System.Diagnostics.Debug.WriteLine(e);
+#endif
         t = default(T);
       }
 #endif

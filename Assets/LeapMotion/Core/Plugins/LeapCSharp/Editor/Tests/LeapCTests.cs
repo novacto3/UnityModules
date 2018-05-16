@@ -549,7 +549,11 @@ namespace Leap.LeapCSharp.Tests {
       StructMarshal<LEAP_CONFIG_CHANGE_EVENT>.PtrToStruct(configMsg.eventStructPtr, out response);
       UInt32 ReturnedRequestID = response.requestId;
       Assert.AreEqual(requestId, ReturnedRequestID, "Request ID is the same");
+#if UNITY_5_6_OR_NEWER
       UnityEngine.Debug.Log("Response status: " + response.status);
+#else
+      System.Diagnostics.Debug.WriteLine("Response status: " + response.status);
+#endif
       Assert.True(response.status == true, "Save successful");
 
       //read the value back

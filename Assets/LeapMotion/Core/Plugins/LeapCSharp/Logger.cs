@@ -17,7 +17,11 @@ namespace LeapInternal {
     /// Logs message to the a Console.
     /// </summary>
     public static void Log(object message) {
+#if UNITY_5_6_OR_NEWER
       UnityEngine.Debug.Log(message);
+#else
+      System.Diagnostics.Debug.WriteLine(message);
+#endif
     }
 
     public static void LogStruct(object thisObject, string title = "") {
