@@ -2,13 +2,16 @@
 
 ## (Re)building the Docs
 
-1. Install [Python][python]. Then install the Python dependencies via `pip`:
+1. Install [Python][python]. (If you're on macOS, you may not be able to use the 
+system-installed Python (2.7), in which case you should install Python 3 and, if
+configured as such, replace `python` and `pip` calls with `python3` and `pip3`.)
+Then install the Python dependencies, [Sphinx][sphinx] and [Breathe][breathe], via `pip`:
 ```
 pip install sphinx breathe
 ```
 
 2. You'll also need [Doxygen][doxygen] installed appropriately for your
-platform. The latest version should suffice. (Latest used: `1.8.13`.)
+platform. The latest version should suffice. (Latest used: `1.8.14`.)
 
 - For macOS, one easy option is [homebrew][homebrew]:
   ```
@@ -45,6 +48,8 @@ Github Pages support.
 // TODO: This really can and should be a single-line command.
 
 [python]: https://www.python.org/
+[sphinx]: http://www.sphinx-doc.org/en/master/
+[breathe]: http://breathe.readthedocs.io/en/latest/
 [vscode]: https://code.visualstudio.com/
 [pythonVSCodeExtension]: https://marketplace.visualstudio.com/items?itemName=ms-python.python
 [rstVSCodeExtension]: https://marketplace.visualstudio.com/items?itemName=lextudio.restructuredtext

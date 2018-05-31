@@ -10,6 +10,7 @@ Begin at Getting Started, or jump to a section in the sidebar on the right.
    :maxdepth: 2
    :caption: Contents:
 
+.. doxygenindex::
 
 Indices and tables
 ==================

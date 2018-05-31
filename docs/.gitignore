@@ -1,3 +1,4 @@
 // Ignore sphinx _build folder as working space.
 // Generated documentation html should be moved be served from ./docs.
 _build/*
+xml/
