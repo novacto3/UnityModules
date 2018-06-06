@@ -25,17 +25,30 @@ var NAVTREE =
       [ "FAQ", "interaction-engine.html#interaction-engine-faq", null ]
     ] ],
     [ "Graphic Renderer", "graphic-renderer.html", [
+      [ "High Level Concepts/Features", "graphic-renderer.html#high-level-concepts-and-features", null ],
+      [ "Getting Started", "graphic-renderer.html#getting-started", null ],
+      [ "The Leap Graphic", "graphic-renderer.html#the-leap-graphic", null ],
+      [ "Graphical Features", "graphic-renderer.html#graphical-features", null ],
+      [ "Rendering Methods", "graphic-renderer.html#rendering-methods", null ],
+      [ "Curved Spaces", "graphic-renderer.html#curved-spaces", null ],
+      [ "Preferences", "graphic-renderer.html#preferences", null ],
+      [ "Shader Variants", "graphic-renderer.html#shader-variants", null ],
+      [ "Writing your own shaders", "graphic-renderer.html#writing-your-own-shaders", null ],
       [ "Graphic Renderer + Interaction Engine", "graphic-renderer.html#gr-plus-ie", null ],
       [ "FAQ", "graphic-renderer.html#graphic-renderer-faq", null ]
     ] ],
     [ "Hands Module", "hands-module.html", [
-      [ "Auto-rigging Tool", "hands-module.html#hands-auto-rigging-tool", null ]
+      [ "Autorigging with LeapHandsAutorig", "hands-module.html#hands-auto-rigging-tool", null ],
+      [ "Step 1: Setting the Scene", "hands-module.html#hands-auto-rig-step-1", null ],
+      [ "Step 2A: Separate FBXs", "hands-module.html#hands-auto-rig-step-2A", null ],
+      [ "Step 2B: Single FBX With Mecanim Humanoid Hierarchy", "hands-module.html#hands-auto-rig-step-2B", null ]
     ] ],
     [ "Upgrading Unity Modules", "upgrading-unity-modules.html", [
       [ "Special upgrade: Old XR Rigs (before Core 4.4.0)", "upgrading-unity-modules.html#upgrades-prior-to-4-4-0", null ],
       [ "Special upgrade: Files (before June 1st, 2017)", "upgrading-unity-modules.html#upgrades-prior-to-2017-06-01", null ]
     ] ],
     [ "Deprecated Modules", "deprecated-modules.html", null ],
+    [ "Developer Resources", "developer-resources.html", null ],
     [ "Namespaces", "namespaces.html", "namespaces" ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -70,9 +83,9 @@ var NAVTREEINDEX =
 "class_leap_1_1_unity_1_1_skeletal_hand.html#ab5c5634050c278b877480f1821c66444",
 "class_leap_1_1_unity_1_1_tests_1_1_hand_factory_right.html#a0cab5466a9d9c96403931eead74305a3",
 "class_leap_internal_1_1_connection.html#a2faca2fee18184d9f5d52aead8137582",
-"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html#af26e0dd34fe46c2dae8b2539bfaf493c",
-"struct_leap_1_1_unity_1_1_animation_1_1_internal_1_1_transform_selector.html#ad6a93a6aeb5e096d0bbe57f1dd7075a3",
-"struct_leap_internal_1_1_l_e_a_p___c_o_n_n_e_c_t_i_o_n___l_o_s_t___e_v_e_n_t.html#a50f795625b67f33371f62722b0fe0063"
+"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html#a182ea18ee87958dac603a3a539740358",
+"struct_leap_1_1_unity_1_1_animation_1_1_internal_1_1_transform_selector.html#a5f20012a05ebd95a249180cd17b989bd",
+"struct_leap_internal_1_1_l_e_a_p___c_o_n_f_i_g___r_e_s_p_o_n_s_e___e_v_e_n_t___w_i_t_h___r_e_f___t_y_p_e.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -107,21 +107,20 @@ $(document).ready(function(){initNavTree('interaction-engine.html','');});
 <div class="title">Interaction Engine </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p>The Interaction Engine allows users to work with your VR application by interacting with <em>physical</em> or <em>pseudo-physical</em> objects. Whether a baseball, a <a href="https://www.youtube.com/watch?v=oZ_53T2jBGg&amp;t=1m11s" title="Leap Motion Blocks demo">block</a>, a virtual trackball, a button on an interface panel, or a hologram with more complex affordances, if there are objects in your application you need your user to be able to <b>hover near</b>, <b>touch</b>, or <b>grasp</b> in some way, the Interaction Engine can do some or all of that work for you.</p>
+<div class="textblock"><p>The Interaction Engine allows users to work with your VR application by interacting with <em>physical</em> or <em>pseudo-physical</em> objects. Whether a baseball, a <a href="https://www.youtube.com/watch?v=oZ_53T2jBGg&amp;t=1m11s" title="Leap Motion Blocks demo">block</a>, a virtual trackball, a button on an interface panel, or a hologram with more complex affordances, if there are objects in your application you need your user to be able to <b>hover</b> near, <b>touch</b>, or <b>grasp</b> in some way, the Interaction Engine can do some or all of that work for you.</p>
 <p>You can find latest stable Interaction Engine package <a href="https://developer.leapmotion.com/unity" title="Leap Motion Unity Developer site">on our developer site</a>.</p>
-<p><b>The Interaction Engine requires Unity 5.6 or later.</b></p>
-<p>If you take a look at the examples that come with the package, you'll notice some common patterns that are good to follow when building things with the Interaction Engine.</p>
+<p>For a quick look at what the Interaction Engine can do, we recommend importing the package into your Unity project (don't forget Core as well!) and checking out the included example scenes, documented further down below. For an in-depth review of features in the Interaction Engine, keep reading!</p>
 <h1><a class="anchor" id="ie-basic-components"></a>
 The basic components of interaction</h1>
 <ul>
-<li>"Interaction objects" are GameObjects with an attached InteractionBehaviour. They require a Rigidbody and at least one Collider.</li>
-<li>The InteractionManager receives FixedUpdate from Unity and handles all the internal logic that makes interactions possible, including updating hand/controller data and interaction object data. <b>You need one of these in your scene for interaction objects to function!</b> A good place for it is right underneath your player's top-level camera rig object (not the camera itself, but its parent).</li>
-<li>Each InteractionController does all the actual <em>interacting</em> with interaction objects, whether by picking them up, touching them, hitting them, or just being near them. This object could be the user's hand by way of the InteractionHand component, or a VR Controller (e.g. Oculus Touch or Vive controller) if it uses the InteractionXRController component. Interaction controllers <b>should sit beneath the Interaction Manager in the hierarchy</b> &ndash; see the diagram below.</li>
+<li>"Interaction objects" are GameObjects with an attached <a class="el" href="class_leap_1_1_unity_1_1_interaction_1_1_interaction_behaviour.html">InteractionBehaviour</a>. They require a Rigidbody and at least one Collider.</li>
+<li>The <a class="el" href="class_leap_1_1_unity_1_1_interaction_1_1_interaction_manager.html">InteractionManager</a> receives FixedUpdate from Unity and handles all the internal logic that makes interactions possible, including updating hand/controller data and interaction object data. <b>You need one of these in your scene for interaction objects to function!</b> A good place for the manager is right underneath your player's top-level camera rig transform (that is, not the player's camera itself, but its parent).</li>
+<li>Each <a class="el" href="class_leap_1_1_unity_1_1_interaction_1_1_interaction_controller.html">InteractionController</a> does all the actual <em>interacting</em> with interaction objects, whether by picking them up, touching them, hitting them, or just being near them. This object could be the user's hand by way of the <a class="el" href="class_leap_1_1_unity_1_1_interaction_1_1_interaction_hand.html">InteractionHand</a> component, or a VR Controller (e.g. Oculus Touch or Vive controller) if it uses the <a class="el" href="class_leap_1_1_unity_1_1_interaction_1_1_interaction_x_r_controller.html">InteractionXRController</a> component. Interaction controllers <b>must sit beneath the Interaction Manager in the hierarchy</b> to function &ndash; see the diagram below.</li>
 </ul>
 <div class="image">
 <img src="http://blog.leapmotion.com/wp-content/uploads/2017/07/IESetupDiagram.png" />
 </div>
-<p>Interaction objects may or may not live inside the player's camera rig depending on whether or not they should move with the player. Interaction controllers, <em>including</em> Interaction Hands, always live underneath the Interaction Manager, and the Interaction Manager should be a sibling of the camera object.</p>
+<p>Interaction objects can live anywhere in your scene, as long as you have an InteractionManager active. Interaction controllers, on the other hand, always need to live underneath the Interaction Manager in order to function, and the Interaction Manager should always be a sibling of the camera object, so that controllers don't inherit strange velocities if the player's rig is moved around.</p>
 <h1><a class="anchor" id="ie-just-add-interactionbehaviour"></a>
 Just add InteractionBehaviour!</h1>
 <p>When you add an <a class="el" href="class_leap_1_1_unity_1_1_interaction_1_1_interaction_behaviour.html">InteractionBehaviour</a> component to an object, a couple of things happen automatically:</p>
@@ -304,7 +303,7 @@ FAQ</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu May 31 2018 17:27:33 for Unity Modules by
+    <li class="footer">Generated on Wed Jun 6 2018 16:45:08 for Unity Modules by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

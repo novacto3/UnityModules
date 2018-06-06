@@ -122,7 +122,7 @@ $(document).ready(function(){initNavTree('core.html','');});
 The core Leap components</h1>
 <h3>The Providers</h3>
 <p><a class="el" href="class_leap_1_1_unity_1_1_leap_provider.html">LeapProvider</a> defines the basic interface our modules expect to use to retrieve <a class="el" href="class_leap_1_1_frame.html">Frame</a> data. This abstraction allows you to create your own LeapProviders, which is useful when testing or developing in a context where Leap Controller hardware isn't immediately.</p>
-<p><a class="el" href="class_leap_1_1_unity_1_1_leap_service_provider.html">LeapServiceProvider</a> is the class that communicates with the Leap service running on your platform and provides Frame objects containing Leap hands to your application. Generally, any class that needs Hand data from the sensor will need a LeapServiceProvider to get that data.</p>
+<p><a class="el" href="class_leap_1_1_unity_1_1_leap_service_provider.html">LeapServiceProvider</a> is the class that communicates with the Leap service running on your platform and provides Frame objects containing Leap hands to your application. Generally, any class that needs Hand data from the sensor will need a reference to a LeapServiceProvider to get that data.</p>
 <p><a class="el" href="class_leap_1_1_unity_1_1_leap_x_r_service_provider.html">LeapXRServiceProvider</a> is the specialized component you should use for XR applications. Place this component directly on your XR camera, so that it can correctly account for differences in tracking timing between the sensor and your headset's pose tracking.</p>
 <p>Finally, if your application needs to manually construct hand data for a standard <a class="el" href="class_leap_1_1_hand.html">Hand</a> pipeline or filter hand data coming through a LeapServiceProvider, the <a class="el" href="class_leap_1_1_unity_1_1_post_process_provider.html">PostProcessProvider</a> is a handy abstract class you can implement with a single function definition.</p>
 <h3>The standard Hand pipeline</h3>
@@ -176,7 +176,7 @@ FAQ</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu May 31 2018 17:27:33 for Unity Modules by
+    <li class="footer">Generated on Wed Jun 6 2018 16:45:08 for Unity Modules by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>
