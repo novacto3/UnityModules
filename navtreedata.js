@@ -41,7 +41,8 @@ var NAVTREE =
       [ "Autorigging with LeapHandsAutorig", "hands-module.html#hands-auto-rigging-tool", null ],
       [ "Step 1: Setting the Scene", "hands-module.html#hands-auto-rig-step-1", null ],
       [ "Step 2A: Separate FBXs", "hands-module.html#hands-auto-rig-step-2A", null ],
-      [ "Step 2B: Single FBX With Mecanim Humanoid Hierarchy", "hands-module.html#hands-auto-rig-step-2B", null ]
+      [ "Step 2B: Single FBX With Mecanim Humanoid Hierarchy", "hands-module.html#hands-auto-rig-step-2B", null ],
+      [ "Step 3: RiggedHand and RiggedFingers Are Set Up Automatically", "hands-module.html#hands-auto-rig-step-3", null ]
     ] ],
     [ "Upgrading Unity Modules", "upgrading-unity-modules.html", [
       [ "Special upgrade: Old XR Rigs (before Core 4.4.0)", "upgrading-unity-modules.html#upgrades-prior-to-4-4-0", null ],
@@ -83,9 +84,9 @@ var NAVTREEINDEX =
 "class_leap_1_1_unity_1_1_skeletal_hand.html#ab5c5634050c278b877480f1821c66444",
 "class_leap_1_1_unity_1_1_tests_1_1_hand_factory_right.html#a0cab5466a9d9c96403931eead74305a3",
 "class_leap_internal_1_1_connection.html#a2faca2fee18184d9f5d52aead8137582",
-"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html#a182ea18ee87958dac603a3a539740358",
-"struct_leap_1_1_unity_1_1_animation_1_1_internal_1_1_transform_selector.html#a5f20012a05ebd95a249180cd17b989bd",
-"struct_leap_internal_1_1_l_e_a_p___c_o_n_f_i_g___r_e_s_p_o_n_s_e___e_v_e_n_t___w_i_t_h___r_e_f___t_y_p_e.html"
+"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html#a1400c6c5cfdc47c9051bb995b83dfbe8",
+"struct_leap_1_1_unity_1_1_animation_1_1_internal_1_1_transform_selector.html#a59ca52f64306b282d45ff0f38564926b",
+"struct_leap_internal_1_1_l_e_a_p___c_o_n_f_i_g___r_e_s_p_o_n_s_e___e_v_e_n_t.html#ad0da4218f271866fe990e4d3a8ab3770"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

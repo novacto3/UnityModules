@@ -123,6 +123,7 @@ var NAVTREEINDEX23 =
 "hands-module.html#hands-auto-rig-step-1":[4,1],
 "hands-module.html#hands-auto-rig-step-2A":[4,2],
 "hands-module.html#hands-auto-rig-step-2B":[4,3],
+"hands-module.html#hands-auto-rig-step-3":[4,4],
 "hands-module.html#hands-auto-rigging-tool":[4,0],
 "index.html":[],
 "index.html":[0],
@@ -248,6 +249,5 @@ var NAVTREEINDEX23 =
 "interface_leap_1_1_unity_1_1_interaction_1_1_i_interaction_behaviour.html#afa1100dfd45bb23d05050da58a4d3718":[9,0,0,1,6,18,22],
 "interface_leap_1_1_unity_1_1_interaction_1_1_i_interaction_behaviour.html#afa6f25e6db232ceb3accd756b96c7b33":[9,0,0,1,6,18,29],
 "interface_leap_1_1_unity_1_1_interaction_1_1_i_interaction_behaviour.html#affd9b239df2426ebe3f7aac0d8cc48a3":[9,0,0,1,6,18,5],
-"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html":[9,0,0,1,6,19],
-"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html#a1400c6c5cfdc47c9051bb995b83dfbe8":[9,0,0,1,6,19,9]
+"interface_leap_1_1_unity_1_1_interaction_1_1_i_internal_interaction_controller.html":[9,0,0,1,6,19]
 };
