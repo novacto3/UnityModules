@@ -78,7 +78,7 @@ namespace Leap.Unity.InputModule {
     void Update() {
       Frame curFrame = LeapDataProvider.CurrentFrame.TransformedCopy(LeapTransform.Identity);
 
-      Quaternion HeadYaw = Quaternion.Euler(0f, InputTracking.GetLocalRotation(VRNode.Head).eulerAngles.y, 0f);
+      Quaternion HeadYaw = Quaternion.Euler(0f, UnityEngine.XR.InputTracking.GetLocalRotation(UnityEngine.XR.XRNode.Head).eulerAngles.y, 0f);
       CurrentRotation = Quaternion.Slerp(CurrentRotation, HeadYaw, 0.1f);
 
       for (int whichHand = 0; whichHand < 2; whichHand++) {
@@ -96,10 +96,10 @@ namespace Leap.Unity.InputModule {
         Vector3 ProjectionOrigin = Vector3.zero;
         switch (curFrame.Hands[whichHand].IsRight) {
           case true:
-            ProjectionOrigin = InputTracking.GetLocalPosition(VRNode.Head) + CurrentRotation * new Vector3(0.15f, -0.13f, 0.1f);
+            ProjectionOrigin = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head) + CurrentRotation * new Vector3(0.15f, -0.13f, 0.1f);
             break;
           case false:
-            ProjectionOrigin = InputTracking.GetLocalPosition(VRNode.Head) + CurrentRotation * new Vector3(-0.15f, -0.13f, 0.1f);
+            ProjectionOrigin = UnityEngine.XR.InputTracking.GetLocalPosition(UnityEngine.XR.XRNode.Head) + CurrentRotation * new Vector3(-0.15f, -0.13f, 0.1f);
             break;
         }
 
