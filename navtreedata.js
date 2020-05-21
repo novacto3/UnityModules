@@ -45,7 +45,7 @@ var NAVTREE =
       [ "Step 3: RiggedHand and RiggedFingers Are Set Up Automatically", "hands-module.html#hands-auto-rig-step-3", null ]
     ] ],
     [ "Upgrading Unity Modules", "upgrading-unity-modules.html", [
-      [ "Special upgrade: Old XR Rigs (before Core 4.4.0)", "upgrading-unity-modules.html#upgrades-prior-to-4-4-0", null ],
+      [ "Special upgrade: Old XR Rigs (before Core 4.5.0)", "upgrading-unity-modules.html#upgrades-prior-to-4-4-0", null ],
       [ "Special upgrade: Files (before June 1st, 2017)", "upgrading-unity-modules.html#upgrades-prior-to-2017-06-01", null ]
     ] ],
     [ "Deprecated Modules", "deprecated-modules.html", null ],
