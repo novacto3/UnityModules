@@ -253,7 +253,7 @@ namespace Leap.Unity {
     protected virtual void OnEnable() {
       resetShaderTransforms();
 
-      var useSRPFix = false;
+      /*var useSRPFix = false;
       if (useExperimentalSRPCallback) {
         #if LEAP_FIX_SRP
         useSRPFix = true;
@@ -268,7 +268,7 @@ namespace Leap.Unity {
         UnityEngine.Experimental.Rendering.RenderPipeline.beginCameraRendering +=
           onPreCull;
 #endif
-      } else {
+      } else {*/
         // Default behavior: Use a camera's OnPreCull callback to update data for
         // temporal warping.
         if (preCullCamera == null) {
@@ -277,13 +277,13 @@ namespace Leap.Unity {
 
         Camera.onPreCull -= onPreCull; // No multiple-subscription.
         Camera.onPreCull += onPreCull;
-      }
+      //}
     }
 
     protected virtual void OnDisable() {
       resetShaderTransforms();
 
-      var useSRPFix = false;
+      /*var useSRPFix = false;
       if (useExperimentalSRPCallback) {
         #if LEAP_FIX_SRP
         useSRPFix = true;
@@ -296,11 +296,11 @@ namespace Leap.Unity {
         UnityEngine.Experimental.Rendering.RenderPipeline.beginCameraRendering -=
           onPreCull;
 #endif
-      } else {
+      } else {*/
         // Default behavior: Use a camera's OnPreCull callback to update data for
         // temporal warping.
         Camera.onPreCull -= onPreCull;
-      }
+      //}
     }
 
     protected override void Start() {
