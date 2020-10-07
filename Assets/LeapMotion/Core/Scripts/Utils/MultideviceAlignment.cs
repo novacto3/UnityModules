@@ -15,9 +15,12 @@ namespace Leap.Unity {
       public Hand currentHand;
     }
     public MultideviceCalibrationInfo[] devices;
+    public MultideviceCalibrationInfo virtualDevice;
 
     public KeyCode takeCalibrationSampleKey;
     public KeyCode solveForRelativeTransformKey;
+    public KeyCode solveForSingleHandKey;
+
 
     // Use this for initialization
     void Start() {}
@@ -34,6 +37,11 @@ namespace Leap.Unity {
         // Moves subsidiary devices to be in alignment with the device at the 0 index
         if (Input.GetKeyUp(solveForRelativeTransformKey)) {
           ComputeRotation();
+        }
+
+        if (Input.GetKeyUp(solveForSingleHandKey))
+        {
+          ComputeCenterHand();
         }
       }
     }
@@ -68,7 +76,7 @@ namespace Leap.Unity {
           }
         }
       }
-    }
+     }
 
     private void ComputeRotation()
     {
@@ -78,7 +86,6 @@ namespace Leap.Unity {
 
         for (int i = 1; i < devices.Length; i++)
         {
-
           Matrix4x4 deviceToOriginDeviceMatrix =
             solver.SolveKabsch(devices[i].handPoints, devices[0].handPoints, 200);
 
@@ -88,6 +95,60 @@ namespace Leap.Unity {
         }
         devices[0].handPoints.Clear();
       }
+    }
+
+    private void ComputeCenterHand()
+    {
+      Matrix4x4[] matrices = new Matrix4x4[devices.Length];
+      KabschSolver solver = new KabschSolver();
+      for (int i = 0; i < devices.Length; i++)
+      {
+          Matrix4x4 deviceToOriginDeviceMatrix =
+          solver.SolveKabsch(devices[i].handPoints, devices[0].handPoints, 200);
+
+        matrices[i] = deviceToOriginDeviceMatrix;
+        if (i != 0)
+        {
+          devices[i].handPoints.Clear();
+          devices[i].deviceProvider.enabled = false;
+        }
+      }
+      devices[0].handPoints.Clear();
+
+      Matrix4x4 resultMatrix = Matrix4x4.zero;
+      foreach (Matrix4x4 matrix in matrices)
+      {
+        for (int i = 0; i < 4; i++)
+        {
+          for (int j = 0; j < 4; j++)
+          {
+            resultMatrix[i,j] += matrix[i,j];
+          }
+        }
+      }
+      for (int i = 0; i < 4; i++)
+      {
+        for (int j = 0; j < 4; j++)
+        {
+          resultMatrix[i, j] = resultMatrix[i, j] / devices.Length;
+        }
+      }
+      devices[0].deviceProvider.transform.Transform(resultMatrix);
+    }
+
+    public Vector CenterOfVectors(List<Vector> vectors)
+    {
+      Vector sum = new Vector(0,0,0);
+      if (vectors == null || vectors.Count == 0)
+      {
+        return sum;
+      }
+
+      foreach (Vector vec in vectors)
+      {
+        sum += vec;
+      }
+      return sum / vectors.Count;
     }
 
     private void OnDrawGizmos() {
