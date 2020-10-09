@@ -83,11 +83,12 @@ namespace Leap.Unity {
       if (devices[0].handPoints.Count > 3)
       {
         KabschSolver solver = new KabschSolver();
-
         for (int i = 1; i < devices.Length; i++)
         {
+          List<Vector3> refValues = new List<Vector3>(devices[0].handPoints);
+
           Matrix4x4 deviceToOriginDeviceMatrix =
-            solver.SolveKabsch(devices[i].handPoints, devices[0].handPoints, 200);
+            solver.SolveKabsch(devices[i].handPoints, refValues, 200);
 
           devices[i].deviceProvider.transform.Transform(deviceToOriginDeviceMatrix);
 
@@ -103,8 +104,10 @@ namespace Leap.Unity {
       KabschSolver solver = new KabschSolver();
       for (int i = 0; i < devices.Length; i++)
       {
-          Matrix4x4 deviceToOriginDeviceMatrix =
-          solver.SolveKabsch(devices[i].handPoints, devices[0].handPoints, 200);
+        List<Vector3> refValues = new List<Vector3>(devices[0].handPoints);
+
+        Matrix4x4 deviceToOriginDeviceMatrix =
+          solver.SolveKabsch(devices[i].handPoints, refValues, 200);
 
         matrices[i] = deviceToOriginDeviceMatrix;
         if (i != 0)
