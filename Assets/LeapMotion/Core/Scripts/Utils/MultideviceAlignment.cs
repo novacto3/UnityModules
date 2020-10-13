@@ -23,10 +23,12 @@ namespace Leap.Unity {
     private bool autoSamplingEnabled = false;
     private bool computeHand = false;
 
-    public MultiLeapServiceProvider virtualDevice;
+    public List<Hand> virtualHands;
 
     // Use this for initialization
-    void Start() {}
+    void Start() {
+      virtualHands = new List<Hand>();
+    }
 
 
     // Update is called once per frame
@@ -55,16 +57,16 @@ namespace Leap.Unity {
           ComputeRotation();
         }
 
-        if (Input.GetKeyUp(solveForSingleHandKey))
+        if (Input.GetKeyUp(solveForSingleHandKey) || computeHand)
         {
           ComputeCenterHandPrecise2();
           if (!computeHand)
           {
             computeHand = true;
-            /*for (int i = 0; i < devices.Length; i++)
+            for (int i = 1; i < devices.Length; i++)
             {
               devices[i].deviceProvider.enabled = false;
-            }*/
+            }
           }
         }
       }
@@ -118,10 +120,8 @@ namespace Leap.Unity {
             solver.SolveKabsch(devices[i].handPoints, refValues, 200);
 
           devices[i].deviceProvider.transform.Transform(deviceToOriginDeviceMatrix);
-          virtualDevice.originTransformations[i] = deviceToOriginDeviceMatrix;
         }
         devices[0].handPoints.Clear();
-        virtualDevice.enabled = true;
       }
     }
 
@@ -169,6 +169,7 @@ namespace Leap.Unity {
 
     public void ComputeCenterHandPrecise2()
     {
+      virtualHands.Clear();
       foreach (Chirality chirality in Enum.GetValues(typeof(Chirality))) {
         Hand currentHand = devices[0].currentHand;
         Hand newHand = new Hand();
@@ -205,64 +206,25 @@ namespace Leap.Unity {
           newHand.Rotation.w += hand.Rotation.w;
           directions.Add(hand.Direction);
           wristPositions.Add(hand.WristPosition);
+          if (i == 0)
+          {
+            newHand.Fingers = hand.Fingers;
+            newHand.Arm = hand.Arm;
+          }
         }
         if (handsCount == 0)
         {
-          continue;
+            continue;
         }
-        for (int j = 0; j < 5; j++)
-        {
-          for (int k = 0; k < 4; k++)
-          {
-            List<Vector> prevJoints = new List<Vector>();
-            List<Vector> nextJoints = new List<Vector>();
-            List<Vector> centers = new List<Vector>();
-            List<Vector> bonesDirections = new List<Vector>();
-            float length = 0;
-            float width = 0;
-            LeapQuaternion bonesRotation = new LeapQuaternion(0,0,0,0);
-            for (int i = 0; i < devices.Length; i++)
-            {
-              Hand hand = devices[i].deviceProvider.CurrentFrame.Get(chirality);
-              if (hand == null)
-              {
-                continue;
-              }
-              prevJoints.Add(hand.Fingers[j].bones[k].PrevJoint);
-              nextJoints.Add(hand.Fingers[j].bones[k].NextJoint);
-              centers.Add(hand.Fingers[j].bones[k].Center);
-              bonesDirections.Add(hand.Fingers[j].bones[k].Direction);
-              length += hand.Fingers[j].bones[k].Length;
-              width += hand.Fingers[j].bones[k].Width;
-              bonesRotation.x += hand.Rotation.x;
-              bonesRotation.y += hand.Rotation.y;
-              bonesRotation.z += hand.Rotation.z;
-              bonesRotation.w += hand.Rotation.w;
-            }
-            bonesRotation.x /= handsCount;
-            bonesRotation.y /= handsCount;
-            bonesRotation.z /= handsCount;
-            bonesRotation.w /= handsCount;
-            newHand.Fingers[j].bones[k].Fill(
-              CenterOfVectors(prevJoints),
-              CenterOfVectors(nextJoints),
-              CenterOfVectors(centers),
-              CenterOfVectors(bonesDirections),
-              length / handsCount,
-              width / handsCount,
-              (Bone.BoneType)k,
-              bonesRotation
-           );
-          }
-        }
+
+
+
         newHand.Rotation.x /= handsCount;
         newHand.Rotation.y /= handsCount;
         newHand.Rotation.z /= handsCount;
         newHand.Rotation.w /= handsCount;
-        Hand virtualHand = virtualDevice.Get(chirality);
-        if (virtualHand != null)
-        {
-          virtualHand.Fill(
+        newHand.Rotation = newHand.Rotation.Normalized;
+        Hand virtualHand = new Hand(
             currentHand.FrameId,
             currentHand.Id,
             newHand.Confidence / handsCount,
@@ -273,7 +235,8 @@ namespace Leap.Unity {
             newHand.PalmWidth / handsCount,
             chirality == Chirality.Left,
             newHand.TimeVisible / handsCount,
-            newHand.Fingers,
+            newHand.Arm,//TODO
+            null,
             CenterOfVectors(palmPositions),
             CenterOfVectors(stabilizedPalmPositions),
             CenterOfVectors(palmVelocities),
@@ -282,7 +245,64 @@ namespace Leap.Unity {
             CenterOfVectors(directions),
             CenterOfVectors(wristPositions)
           );
-        } 
+
+        ComputeFingers(handsCount, ref virtualHand, chirality);
+
+        virtualHands.Add(virtualHand);
+      }
+    }
+
+    private void ComputeFingers(int handsCount, ref Hand newHand, Chirality chirality)
+    {
+      newHand.Fingers = new List<Finger>(5);
+      for (int j = 0; j < 5; j++)
+      {
+        newHand.Fingers.Add(new Finger());
+        newHand.Fingers[j].bones = new Bone[4];
+        for (int k = 0; k < 4; k++)
+        {
+          newHand.Fingers[j].bones[k] = new Bone();
+          List<Vector> prevJoints = new List<Vector>();
+          List<Vector> nextJoints = new List<Vector>();
+          List<Vector> centers = new List<Vector>();
+          List<Vector> bonesDirections = new List<Vector>();
+          float length = 0;
+          float width = 0;
+          LeapQuaternion bonesRotation = new LeapQuaternion(0, 0, 0, 0);
+          for (int i = 0; i < devices.Length; i++)
+          {
+            Hand hand = devices[i].deviceProvider.CurrentFrame.Get(chirality);
+            if (hand == null)
+            {
+              continue;
+            }
+            prevJoints.Add(hand.Fingers[j].bones[k].PrevJoint);
+            nextJoints.Add(hand.Fingers[j].bones[k].NextJoint);
+            centers.Add(hand.Fingers[j].bones[k].Center);
+            bonesDirections.Add(hand.Fingers[j].bones[k].Direction);
+            length += hand.Fingers[j].bones[k].Length;
+            width += hand.Fingers[j].bones[k].Width;
+            bonesRotation.x += hand.Fingers[j].bones[k].Rotation.x;
+            bonesRotation.y += hand.Fingers[j].bones[k].Rotation.y;
+            bonesRotation.z += hand.Fingers[j].bones[k].Rotation.z;
+            bonesRotation.w += hand.Fingers[j].bones[k].Rotation.w;
+          }
+          bonesRotation.x /= handsCount;
+          bonesRotation.y /= handsCount;
+          bonesRotation.z /= handsCount;
+          bonesRotation.w /= handsCount;
+          bonesRotation = bonesRotation.Normalized;
+          newHand.Fingers[j].bones[k].Fill(
+            CenterOfVectors(prevJoints),
+            CenterOfVectors(nextJoints),
+            CenterOfVectors(centers),
+            CenterOfVectors(bonesDirections),
+            length / handsCount,
+            width / handsCount,
+            (Bone.BoneType)k,
+            bonesRotation
+         );
+        }
       }
     }
 

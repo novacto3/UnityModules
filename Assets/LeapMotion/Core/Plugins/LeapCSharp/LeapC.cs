@@ -532,6 +532,7 @@ namespace LeapInternal {
     public UInt32 nHands;
     public IntPtr pHands; //LEAP_HAND*
     public float framerate;
+    public UInt32 device_id;
   }
 
   [StructLayout(LayoutKind.Sequential, Pack = 1)]

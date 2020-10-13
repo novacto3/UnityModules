@@ -19,8 +19,6 @@ namespace Leap.Unity {
   /// </summary>
   public class MultiLeapServiceProvider : BaseLeapServiceProvider {
 
-    public Dictionary<uint, Matrix4x4> originTransformations = new Dictionary<uint, Matrix4x4>();
-
     protected override void Update()
     {
       if (_workerThreadProfiling)
@@ -41,15 +39,6 @@ namespace Leap.Unity {
 
       _fixedOffset.Update(Time.time - Time.fixedTime, Time.deltaTime);
 
-
-      if (originTransformations.ContainsKey(_transformedFixedFrame.DeviceID))
-      {
-        Matrix4x4 newTransform = originTransformations[_transformedFixedFrame.DeviceID] * this.transform.localToWorldMatrix;
-        untransformedUpdateFrame.Transform(newTransform.GetVector3(), newTransform.GetQuaternion());
-        _transformedFixedFrame.Transform(newTransform.GetVector3(), newTransform.GetQuaternion());
-      }
-
-
       if (_frameOptimization == FrameOptimizationMode.ReusePhysicsForUpdate)
       {
         DispatchUpdateFrameEvent(_transformedFixedFrame);
@@ -68,12 +57,6 @@ namespace Leap.Unity {
 
     protected override void FixedUpdate()
     {
-      if (originTransformations.ContainsKey(_transformedFixedFrame.DeviceID))
-      {
-        Matrix4x4 newTransform = originTransformations[_transformedFixedFrame.DeviceID] * this.transform.localToWorldMatrix;
-        untransformedUpdateFrame.Transform(newTransform.GetVector3(), newTransform.GetQuaternion());
-        _transformedFixedFrame.Transform(newTransform.GetVector3(), newTransform.GetQuaternion());
-      }
 
       if (_frameOptimization == FrameOptimizationMode.ReuseUpdateForPhysics)
       {
@@ -115,6 +98,7 @@ namespace Leap.Unity {
       _leapController.Device += (s, e) => {
         _onDeviceSafe?.Invoke(e.Device);
       };
+
 
       _onDeviceSafe += (d) => {
         _leapController.SubscribeToDeviceEvents(d);
