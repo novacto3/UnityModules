@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity.Internal;
@@ -24,9 +23,11 @@ namespace Leap.Unity {
     private bool autoSamplingEnabled = false;
     private bool computeHand = false;
 
+    public MultiLeapServiceProvider virtualDevice;
 
     // Use this for initialization
     void Start() {}
+
 
     // Update is called once per frame
     void Update() {
@@ -54,10 +55,17 @@ namespace Leap.Unity {
           ComputeRotation();
         }
 
-        if (Input.GetKeyUp(solveForSingleHandKey) || computeHand)
+        if (Input.GetKeyUp(solveForSingleHandKey))
         {
           ComputeCenterHandPrecise2();
-          computeHand = true;
+          if (!computeHand)
+          {
+            computeHand = true;
+            /*for (int i = 0; i < devices.Length; i++)
+            {
+              devices[i].deviceProvider.enabled = false;
+            }*/
+          }
         }
       }
     }
@@ -102,7 +110,7 @@ namespace Leap.Unity {
       if (devices[0].handPoints.Count > 3)
       {
         KabschSolver solver = new KabschSolver();
-        for (int i = 1; i < devices.Length; i++)
+        for (uint i = 1; i < devices.Length; i++)
         {
           List<Vector3> refValues = new List<Vector3>(devices[0].handPoints);
 
@@ -110,10 +118,10 @@ namespace Leap.Unity {
             solver.SolveKabsch(devices[i].handPoints, refValues, 200);
 
           devices[i].deviceProvider.transform.Transform(deviceToOriginDeviceMatrix);
-
-          devices[i].handPoints.Clear();
+          virtualDevice.originTransformations[i] = deviceToOriginDeviceMatrix;
         }
         devices[0].handPoints.Clear();
+        virtualDevice.enabled = true;
       }
     }
 
@@ -128,7 +136,7 @@ namespace Leap.Unity {
 
         Matrix4x4 deviceToOriginDeviceMatrix =
           solver.SolveKabsch(devices[i].handPoints, refValues, 200);
-
+        
         matrices[i] = deviceToOriginDeviceMatrix;
         if (i != 0)
         {
@@ -251,30 +259,30 @@ namespace Leap.Unity {
         newHand.Rotation.y /= handsCount;
         newHand.Rotation.z /= handsCount;
         newHand.Rotation.w /= handsCount;
-        devices[0].currentHand.Fill(
-          currentHand.FrameId,
-          currentHand.Id,
-          newHand.Confidence/ handsCount,
-          newHand.GrabStrength/ handsCount,
-          newHand.GrabAngle/ handsCount,
-          newHand.PinchStrength/ handsCount,
-          newHand.PinchDistance/ handsCount,
-          newHand.PalmWidth/ handsCount,
-          chirality == Chirality.Left,
-          newHand.TimeVisible / handsCount,
-          newHand.Fingers,
-          CenterOfVectors(palmPositions),
-          CenterOfVectors(stabilizedPalmPositions),
-          CenterOfVectors(palmVelocities),
-          CenterOfVectors(palmNormals),
-          newHand.Rotation,
-          CenterOfVectors(directions),
-          CenterOfVectors(wristPositions)
-        );
-        /*for (int i = 1; i < devices.Length; i++)
+        Hand virtualHand = virtualDevice.Get(chirality);
+        if (virtualHand != null)
         {
-          devices[i].deviceProvider.enabled = false;
-        }*/ 
+          virtualHand.Fill(
+            currentHand.FrameId,
+            currentHand.Id,
+            newHand.Confidence / handsCount,
+            newHand.GrabStrength / handsCount,
+            newHand.GrabAngle / handsCount,
+            newHand.PinchStrength / handsCount,
+            newHand.PinchDistance / handsCount,
+            newHand.PalmWidth / handsCount,
+            chirality == Chirality.Left,
+            newHand.TimeVisible / handsCount,
+            newHand.Fingers,
+            CenterOfVectors(palmPositions),
+            CenterOfVectors(stabilizedPalmPositions),
+            CenterOfVectors(palmVelocities),
+            CenterOfVectors(palmNormals),
+            newHand.Rotation,
+            CenterOfVectors(directions),
+            CenterOfVectors(wristPositions)
+          );
+        } 
       }
     }
 
