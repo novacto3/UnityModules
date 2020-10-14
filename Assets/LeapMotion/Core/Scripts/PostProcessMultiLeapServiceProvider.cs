@@ -20,16 +20,12 @@ namespace Leap.Unity {
   public class PostProcessMultiLeapServiceProvider : PostProcessProvider {
 
     public MultideviceAlignment alignment;
-    public int count = 0;
-    public int overAllcount = 0;
 
     public override void ProcessFrame(ref Frame inputFrame)
     {
       inputFrame.Hands.Clear();
-      overAllcount++;
       if (alignment != null && alignment.virtualHands != null && alignment.virtualHands.Count > 0)
       {
-        count++;
         foreach (Hand hand in alignment.virtualHands)
         {
           inputFrame.Hands.Add(hand);
