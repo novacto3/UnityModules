@@ -23,14 +23,12 @@ namespace Leap.Unity {
 
     public override void ProcessFrame(ref Frame inputFrame)
     {
-      inputFrame.Hands.Clear();
-      if (alignment != null && alignment.virtualHands != null && alignment.virtualHands.Count > 0)
+      if (alignment != null)
       {
-        foreach (Hand hand in alignment.virtualHands)
-        {
-          inputFrame.Hands.Add(hand);
-          //Debug.Log(hand.WristPosition);
-        }
+        Hand left = inputFrame.Get(Chirality.Left);
+        alignment.ComputeCenterHandPrecise2(ref left);
+        Hand right = inputFrame.Get(Chirality.Right);
+        alignment.ComputeCenterHandPrecise2(ref right);
       }
     }
   }
