@@ -26,9 +26,9 @@ namespace Leap.Unity {
       if (alignment != null)
       {
         Hand left = inputFrame.Get(Chirality.Left);
-        alignment.ComputeCenterHandPrecise2(ref left);
+        alignment.MergeHands(ref left);
         Hand right = inputFrame.Get(Chirality.Right);
-        alignment.ComputeCenterHandPrecise2(ref right);
+        alignment.MergeHands(ref right);
       }
     }
   }

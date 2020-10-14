@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Leap.Unity.Internal;
+using System.Linq;
 
 namespace Leap.Unity {
   public class MultideviceAlignment : MonoBehaviour {
@@ -15,6 +16,8 @@ namespace Leap.Unity {
     }
     public MultideviceCalibrationInfo[] devices;
 
+    public HandModelManager virtualHands;
+
     public KeyCode takeCalibrationSampleKey;
     public KeyCode autocalibrateKey;
     public KeyCode solveForRelativeTransformKey;
@@ -23,9 +26,9 @@ namespace Leap.Unity {
     private bool autoSamplingEnabled = false;
     private bool computeHand = false;
 
+
     // Use this for initialization
-    void Start() {
-    }
+    void Start() {}
 
 
     // Update is called once per frame
@@ -37,7 +40,7 @@ namespace Leap.Unity {
           AddMeasurement();
         }
 
-        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count == 5000))
+        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= devices.Count() * 2000))
         {
           if (!autoSamplingEnabled)
           {
@@ -59,16 +62,21 @@ namespace Leap.Unity {
           if (!computeHand)
           {
             computeHand = true;
-            for (int i = 0 ; i < devices.Length; i++)
+            for (int i = 0; i < devices.Length; i++)
             {
               object child = devices[i].deviceProvider.GetComponentInChildren(typeof(HandModelManager));
               if (child != null)
               {
-
+                ((HandModelManager)child).DisableGroup("Graphics_Hands");
+                ((HandModelManager)child).DisableGroup("Physics_Hands");
               }
-              ((HandModelManager)child).DisableGroup("Graphics_Hands");
-              ((HandModelManager)child).DisableGroup("Physics_Hands");
             }
+          }
+
+          if (virtualHands != null)
+          {
+            virtualHands.EnableGroup("Graphics_Hands");
+            virtualHands.EnableGroup("Physics_Hands");
           }
         }
       }
@@ -127,56 +135,14 @@ namespace Leap.Unity {
       }
     }
 
-    private void ComputeCenterHand()
+    public void MergeHands(ref Hand virtualHand)
     {
-      Matrix4x4[] matrices = new Matrix4x4[devices.Length];
-      KabschSolver solver = new KabschSolver();
-      matrices[0] = Matrix4x4.identity;
-      for (int i = 1; i < devices.Length; i++)
-      {
-        List<Vector3> refValues = new List<Vector3>(devices[0].handPoints);
-
-        Matrix4x4 deviceToOriginDeviceMatrix =
-          solver.SolveKabsch(devices[i].handPoints, refValues, 200);
-        
-        matrices[i] = deviceToOriginDeviceMatrix;
-        if (i != 0)
-        {
-          devices[i].handPoints.Clear();
-          devices[i].deviceProvider.enabled = false;
-        }
-      }
-      devices[0].handPoints.Clear();
-
-      Matrix4x4 resultMatrix = Matrix4x4.zero;
-      foreach (Matrix4x4 matrix in matrices)
-      {
-        for (int i = 0; i < 4; i++)
-        {
-          for (int j = 0; j < 4; j++)
-          {
-            resultMatrix[i,j] += matrix[i,j];
-          }
-        }
-      }
-      for (int i = 0; i < 4; i++)
-      {
-        for (int j = 0; j < 4; j++)
-        {
-          resultMatrix[i, j] = resultMatrix[i, j] / devices.Length;
-        }
-      }
-      devices[0].deviceProvider.transform.Transform(resultMatrix);
-    }
-
-    public void ComputeCenterHandPrecise2(ref Hand newHand)
-    {
-      if (newHand == null)
+      if (virtualHand == null)
       {
         return;
       }
 
-      Chirality chirality = newHand.IsLeft ? Chirality.Left : Chirality.Right;
+      Chirality chirality = virtualHand.IsLeft ? Chirality.Left : Chirality.Right;
       List<Vector> palmPositions = new List<Vector>();
       List<Vector> stabilizedPalmPositions = new List<Vector>();
       List<Vector> palmVelocities = new List<Vector>();
@@ -193,27 +159,27 @@ namespace Leap.Unity {
           continue;
         }
         handsCount++;
-        newHand.Confidence += hand.Confidence;
-        newHand.GrabStrength += hand.GrabStrength;
-        newHand.GrabAngle += hand.GrabAngle;
-        newHand.PinchStrength += hand.PinchStrength;
-        newHand.PinchDistance += hand.PinchDistance;
-        newHand.PalmWidth += hand.PalmWidth;
-        newHand.TimeVisible += hand.TimeVisible;
+        virtualHand.Confidence += hand.Confidence;
+        virtualHand.GrabStrength += hand.GrabStrength;
+        virtualHand.GrabAngle += hand.GrabAngle;
+        virtualHand.PinchStrength += hand.PinchStrength;
+        virtualHand.PinchDistance += hand.PinchDistance;
+        virtualHand.PalmWidth += hand.PalmWidth;
+        virtualHand.TimeVisible += hand.TimeVisible;
         palmPositions.Add(hand.PalmPosition);
         stabilizedPalmPositions.Add(hand.StabilizedPalmPosition);
         palmVelocities.Add(hand.PalmVelocity);
         palmNormals.Add(hand.PalmNormal);
-        newHand.Rotation.x += hand.Rotation.x;
-        newHand.Rotation.y += hand.Rotation.y;
-        newHand.Rotation.z += hand.Rotation.z;
-        newHand.Rotation.w += hand.Rotation.w;
+        virtualHand.Rotation.x += hand.Rotation.x;
+        virtualHand.Rotation.y += hand.Rotation.y;
+        virtualHand.Rotation.z += hand.Rotation.z;
+        virtualHand.Rotation.w += hand.Rotation.w;
         directions.Add(hand.Direction);
         wristPositions.Add(hand.WristPosition);
         if (i == 0)
         {
-          newHand.Fingers = hand.Fingers;
-          newHand.Arm = hand.Arm;
+          virtualHand.Fingers = hand.Fingers;
+          virtualHand.Arm = hand.Arm;
         }
       }
       if (handsCount == 0)
@@ -221,31 +187,31 @@ namespace Leap.Unity {
           return;
       }
 
-      newHand.Rotation.x /= handsCount;
-      newHand.Rotation.y /= handsCount;
-      newHand.Rotation.z /= handsCount;
-      newHand.Rotation.w /= handsCount;
-      newHand.Rotation = newHand.Rotation.Normalized;
+      virtualHand.Rotation.x /= handsCount;
+      virtualHand.Rotation.y /= handsCount;
+      virtualHand.Rotation.z /= handsCount;
+      virtualHand.Rotation.w /= handsCount;
+      virtualHand.Rotation = virtualHand.Rotation.Normalized;
 
-      newHand.FrameId = devices[0].deviceProvider.CurrentFrame.Id;
-      newHand.Id = chirality == Chirality.Right?1:2;
-      newHand.Confidence /= handsCount;
-      newHand.GrabStrength /= handsCount;
-      newHand.GrabAngle /= handsCount;
-      newHand.PinchStrength /= handsCount;
-      newHand.PinchDistance /= handsCount;
-      newHand.PalmWidth /= handsCount;
-      newHand.IsLeft = chirality == Chirality.Left;
-      newHand.TimeVisible /= handsCount;
-      newHand.PalmPosition = CenterOfVectors(palmPositions);
-      newHand.StabilizedPalmPosition = CenterOfVectors(stabilizedPalmPositions);
-      newHand.PalmVelocity = CenterOfVectors(palmVelocities);
-      newHand.PalmNormal = CenterOfVectors(palmNormals);
-      newHand.Direction = CenterOfVectors(directions);
-      newHand.WristPosition = CenterOfVectors(wristPositions);
+      virtualHand.FrameId = devices[0].deviceProvider.CurrentFrame.Id;
+      virtualHand.Id = chirality == Chirality.Right?1:2;
+      virtualHand.Confidence /= handsCount;
+      virtualHand.GrabStrength /= handsCount;
+      virtualHand.GrabAngle /= handsCount;
+      virtualHand.PinchStrength /= handsCount;
+      virtualHand.PinchDistance /= handsCount;
+      virtualHand.PalmWidth /= handsCount;
+      virtualHand.IsLeft = chirality == Chirality.Left;
+      virtualHand.TimeVisible /= handsCount;
+      virtualHand.PalmPosition = CenterOfVectors(palmPositions);
+      virtualHand.StabilizedPalmPosition = CenterOfVectors(stabilizedPalmPositions);
+      virtualHand.PalmVelocity = CenterOfVectors(palmVelocities);
+      virtualHand.PalmNormal = CenterOfVectors(palmNormals);
+      virtualHand.Direction = CenterOfVectors(directions);
+      virtualHand.WristPosition = CenterOfVectors(wristPositions);
 
-      ComputeArm(handsCount, ref newHand, chirality);
-      ComputeFingers(handsCount, ref newHand, chirality);
+      ComputeArm(handsCount, ref virtualHand, chirality);
+      ComputeFingers(handsCount, ref virtualHand, chirality);
 
     }
 
