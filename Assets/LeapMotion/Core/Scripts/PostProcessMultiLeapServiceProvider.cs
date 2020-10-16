@@ -22,12 +22,32 @@ namespace Leap.Unity {
     {
       if (alignment != null && alignment.computeHand)
       {
-        Hand left = inputFrame.Get(Chirality.Left);
-        alignment.MergeHands(ref left);
-        Hand right = inputFrame.Get(Chirality.Right);
-        alignment.MergeHands(ref right);
+        ProcessHand(ref inputFrame, Chirality.Left);
+        ProcessHand(ref inputFrame, Chirality.Right);
+      }
+    }
+
+    private void ProcessHand(ref Frame inputFrame, Chirality chirality)
+    {
+      bool artificital = false;
+      Hand hand = inputFrame.Get(chirality);
+      if (hand == null)
+      {
+        hand = new Hand
+        {
+          IsLeft = chirality == Chirality.Left,
+          FrameId = inputFrame.Id
+        };
+        hand.Id = hand.IsLeft ? 1 : 2;
+        artificital = true;
+      }
+
+      alignment.MergeHands(ref hand, chirality);
+
+      if (artificital && hand != null)
+      {
+        inputFrame.Hands.Add(hand);
       }
     }
   }
-
 }

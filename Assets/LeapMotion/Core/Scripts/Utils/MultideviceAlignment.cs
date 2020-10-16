@@ -134,14 +134,8 @@ namespace Leap.Unity {
       }
     }
 
-    public void MergeHands(ref Hand virtualHand)
+    public void MergeHands(ref Hand virtualHand, Chirality chirality)
     {
-      if (virtualHand == null)
-      {
-        return;
-      }
-
-      Chirality chirality = virtualHand.IsLeft ? Chirality.Left : Chirality.Right;
       List<Vector> palmPositions = new List<Vector>();
       List<Vector> stabilizedPalmPositions = new List<Vector>();
       List<Vector> palmVelocities = new List<Vector>();
@@ -149,6 +143,7 @@ namespace Leap.Unity {
       List<Vector> directions = new List<Vector>();
       List<Vector> wristPositions = new List<Vector>();
       int handsCount = 0;
+
 
       virtualHand.Confidence = 0;
       virtualHand.GrabStrength = 0;
@@ -187,7 +182,8 @@ namespace Leap.Unity {
       }
       if (handsCount == 0)
       {
-          return;
+         virtualHand = null;
+         return;
       }
 
       DivideQuaternion(ref virtualHand.Rotation, virtualHand.Confidence);
