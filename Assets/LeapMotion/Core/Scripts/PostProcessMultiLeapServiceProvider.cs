@@ -7,11 +7,8 @@
  * between Leap Motion and you, your company or other organization.           *
  ******************************************************************************/
 
-using UnityEngine;
 
 namespace Leap.Unity {
-  using Attributes;
-  using System.Collections.Generic;
 
   /// <summary>
   /// The LeapServiceProvider provides tracked Leap Hand data and images from the device
@@ -23,7 +20,7 @@ namespace Leap.Unity {
 
     public override void ProcessFrame(ref Frame inputFrame)
     {
-      if (alignment != null)
+      if (alignment != null && alignment.computeHand)
       {
         Hand left = inputFrame.Get(Chirality.Left);
         alignment.MergeHands(ref left);

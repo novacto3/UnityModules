@@ -18,13 +18,12 @@ namespace Leap.Unity {
 
     public HandModelManager virtualHands;
 
-    public KeyCode takeCalibrationSampleKey;
     public KeyCode autocalibrateKey;
     public KeyCode solveForRelativeTransformKey;
     public KeyCode solveForSingleHandKey;
 
     private bool autoSamplingEnabled = false;
-    private bool computeHand = false;
+    public bool computeHand = false;
 
 
     // Use this for initialization
@@ -36,7 +35,7 @@ namespace Leap.Unity {
       if (devices.Length > 1) {
 
         // Add the set of joints to device-specific lists
-        if (Input.GetKeyUp(takeCalibrationSampleKey) || autoSamplingEnabled) {
+        if (autoSamplingEnabled) {
           AddMeasurement();
         }
 
