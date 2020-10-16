@@ -40,7 +40,7 @@ namespace Leap.Unity {
           AddMeasurement();
         }
 
-        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= devices.Count() * 2000))
+        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= (devices.Count() * 10000)))
         {
           if (!autoSamplingEnabled)
           {
