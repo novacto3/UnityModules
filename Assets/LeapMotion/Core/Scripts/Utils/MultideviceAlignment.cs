@@ -39,7 +39,7 @@ namespace Leap.Unity {
           AddMeasurement();
         }
 
-        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= (devices.Count() * 10000)))
+        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= 50000))
         {
           if (!autoSamplingEnabled)
           {
@@ -162,6 +162,10 @@ namespace Leap.Unity {
           continue;
         }
         handsCount++;
+        float angle = hand.PalmNormal.AngleTo(-devices[i].deviceProvider.transform.up.ToVector());
+
+        hand.Confidence = 0.0810569f * angle * angle - 0.572958f * angle + 1;
+
         virtualHand.Confidence += hand.Confidence;
         virtualHand.GrabStrength += hand.GrabStrength * hand.Confidence;
         virtualHand.GrabAngle += hand.GrabAngle * hand.Confidence;
@@ -180,7 +184,7 @@ namespace Leap.Unity {
         directions.Add(hand.Direction * hand.Confidence);
         wristPositions.Add(hand.WristPosition * hand.Confidence);
       }
-      if (handsCount == 0)
+      if (handsCount == 0 || handsCount > 1 && (virtualHand.Confidence / handsCount) < 0.3)
       {
          virtualHand = null;
          return;
@@ -206,7 +210,7 @@ namespace Leap.Unity {
 
       ComputeArm(virtualHand.Confidence, ref virtualHand, chirality);
       ComputeFingers(virtualHand.Confidence, ref virtualHand, chirality);
-      virtualHand.Confidence /= virtualHand.Confidence;
+      virtualHand.Confidence /= handsCount;
     }
 
     private void ComputeArm(float overallConfidence, ref Hand virtualHand, Chirality chirality)
@@ -239,14 +243,14 @@ namespace Leap.Unity {
       }
       DivideQuaternion(ref armRotation, overallConfidence);
       virtualHand.Arm = new Arm(
-          CenterOfVectors(elbows, overallConfidence),
-          CenterOfVectors(wrists, overallConfidence),
-          CenterOfVectors(centers, overallConfidence),
-          CenterOfVectors(directions, overallConfidence),
-          length / overallConfidence,
-          width / overallConfidence,
-          armRotation.Normalized
-        );
+        CenterOfVectors(elbows, overallConfidence),
+        CenterOfVectors(wrists, overallConfidence),
+        CenterOfVectors(centers, overallConfidence),
+        CenterOfVectors(directions, overallConfidence),
+        length / overallConfidence,
+        width / overallConfidence,
+        armRotation.Normalized
+      );
     }
     private void ComputeFingers(float overallConfidence, ref Hand newHand, Chirality chirality)
     {
@@ -273,25 +277,24 @@ namespace Leap.Unity {
           width += hand.Fingers[j].Width * hand.Confidence;
           length += hand.Fingers[j].Length * hand.Confidence;
           extendedCount += hand.Fingers[j].IsExtended ? 1 : 0;
-
-          newHand.Fingers.Add(new Finger(
-            newHand.FrameId,
-            newHand.Id,
-            j,
-            timeVisible / overallConfidence,
-            CenterOfVectors(tipPositions, overallConfidence),
-            CenterOfVectors(directions, overallConfidence),
-            width / overallConfidence,
-            length / overallConfidence,
-            extendedCount >= overallConfidence,
-            (Finger.FingerType)j,
-            ComputeFingerBone(overallConfidence, j, 0, chirality),
-            ComputeFingerBone(overallConfidence, j, 1, chirality),
-            ComputeFingerBone(overallConfidence, j, 2, chirality),
-            ComputeFingerBone(overallConfidence, j, 3, chirality)
-           )
-          );
         }
+        newHand.Fingers.Add(new Finger(
+          newHand.FrameId,
+          newHand.Id,
+          j,
+          timeVisible / overallConfidence,
+          CenterOfVectors(tipPositions, overallConfidence),
+          CenterOfVectors(directions, overallConfidence),
+          width / overallConfidence,
+          length / overallConfidence,
+          extendedCount >= overallConfidence,
+          (Finger.FingerType)j,
+          ComputeFingerBone(overallConfidence, j, 0, chirality),
+          ComputeFingerBone(overallConfidence, j, 1, chirality),
+          ComputeFingerBone(overallConfidence, j, 2, chirality),
+          ComputeFingerBone(overallConfidence, j, 3, chirality)
+          )
+        );
       }
     }
 
@@ -335,6 +338,7 @@ namespace Leap.Unity {
         (Bone.BoneType)bonedIndex,
         bonesRotation
      );
+
     }
 
     private Vector CenterOfVectors(List<Vector> vectors, float confidence)
