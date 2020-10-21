@@ -19,11 +19,10 @@ namespace Leap.Unity {
     public HandModelManager virtualHands;
 
     public KeyCode autocalibrateKey;
-    public KeyCode solveForRelativeTransformKey;
-    public KeyCode solveForSingleHandKey;
+    public KeyCode changeMergeHandsKey;
 
     private bool autoSamplingEnabled = false;
-    public bool computeHand = false;
+    private bool mergeHands = false;
 
 
     // Use this for initialization
@@ -33,7 +32,6 @@ namespace Leap.Unity {
     // Update is called once per frame
     void Update() {
       if (devices.Length > 1) {
-
         // Add the set of joints to device-specific lists
         if (autoSamplingEnabled) {
           AddMeasurement();
@@ -51,16 +49,11 @@ namespace Leap.Unity {
           }
         }
 
-        // Moves subsidiary devices to be in alignment with the device at the 0 index
-        if (Input.GetKeyUp(solveForRelativeTransformKey)) {
-          ComputeRotation();
-        }
-
-        if (Input.GetKeyUp(solveForSingleHandKey))
+        if (Input.GetKeyUp(changeMergeHandsKey))
         {
-          if (!computeHand)
+          if (!mergeHands)
           {
-            computeHand = true;
+            mergeHands = true;
             for (int i = 0; i < devices.Length; i++)
             {
               object child = devices[i].deviceProvider.GetComponentInChildren(typeof(HandModelManager));
@@ -70,12 +63,31 @@ namespace Leap.Unity {
                 ((HandModelManager)child).DisableGroup("Physics_Hands");
               }
             }
-          }
 
-          if (virtualHands != null)
+            if (virtualHands != null)
+            {
+              virtualHands.EnableGroup("Graphics_Hands");
+              virtualHands.EnableGroup("Physics_Hands");
+            }
+          }
+          else
           {
-            virtualHands.EnableGroup("Graphics_Hands");
-            virtualHands.EnableGroup("Physics_Hands");
+            mergeHands = false;
+            for (int i = 0; i < devices.Length; i++)
+            {
+              object child = devices[i].deviceProvider.GetComponentInChildren(typeof(HandModelManager));
+              if (child != null)
+              {
+                ((HandModelManager)child).EnableGroup("Graphics_Hands");
+                ((HandModelManager)child).EnableGroup("Physics_Hands");
+              }
+            }
+
+            if (virtualHands != null)
+            {
+              virtualHands.DisableGroup("Graphics_Hands");
+              virtualHands.DisableGroup("Physics_Hands");
+            }
           }
         }
       }
@@ -164,7 +176,7 @@ namespace Leap.Unity {
         handsCount++;
         float angle = hand.PalmNormal.AngleTo(-devices[i].deviceProvider.transform.up.ToVector());
 
-        hand.Confidence = 0.0810569f * angle * angle - 0.572958f * angle + 1;
+        hand.Confidence = (0.283699f * angle * angle) - (0.891268f * angle) + 1;
 
         virtualHand.Confidence += hand.Confidence;
         virtualHand.GrabStrength += hand.GrabStrength * hand.Confidence;
@@ -184,7 +196,7 @@ namespace Leap.Unity {
         directions.Add(hand.Direction * hand.Confidence);
         wristPositions.Add(hand.WristPosition * hand.Confidence);
       }
-      if (handsCount == 0 || handsCount > 1 && (virtualHand.Confidence / handsCount) < 0.3)
+      if (handsCount == 0 || (virtualHand.Confidence / handsCount) < 0.1)
       {
          virtualHand = null;
          return;
@@ -206,7 +218,6 @@ namespace Leap.Unity {
       virtualHand.PalmNormal = CenterOfVectors(palmNormals, virtualHand.Confidence);
       virtualHand.Direction = CenterOfVectors(directions, virtualHand.Confidence);
       virtualHand.WristPosition = CenterOfVectors(wristPositions, virtualHand.Confidence);
-
 
       ComputeArm(virtualHand.Confidence, ref virtualHand, chirality);
       ComputeFingers(virtualHand.Confidence, ref virtualHand, chirality);
@@ -249,7 +260,7 @@ namespace Leap.Unity {
         CenterOfVectors(directions, overallConfidence),
         length / overallConfidence,
         width / overallConfidence,
-        armRotation.Normalized
+        armRotation
       );
     }
     private void ComputeFingers(float overallConfidence, ref Hand newHand, Chirality chirality)
@@ -338,7 +349,6 @@ namespace Leap.Unity {
         (Bone.BoneType)bonedIndex,
         bonesRotation
      );
-
     }
 
     private Vector CenterOfVectors(List<Vector> vectors, float confidence)
@@ -362,6 +372,11 @@ namespace Leap.Unity {
       quaternion.y /= divider;
       quaternion.z /= divider;
       quaternion.w /= divider;
+    }
+
+    public bool getMergeHands()
+    {
+      return mergeHands;
     }
 
     private void OnDrawGizmos() {

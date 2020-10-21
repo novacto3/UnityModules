@@ -20,9 +20,9 @@ namespace Leap.Unity {
 
     public override void ProcessFrame(ref Frame inputFrame)
     {
-      if (alignment != null && alignment.computeHand)
+      if (alignment != null && alignment.getMergeHands())
       {
-        ProcessHand(ref inputFrame, Chirality.Left);
+        //ProcessHand(ref inputFrame, Chirality.Left);
         ProcessHand(ref inputFrame, Chirality.Right);
       }
     }
@@ -47,6 +47,10 @@ namespace Leap.Unity {
       if (artificital && hand != null)
       {
         inputFrame.Hands.Add(hand);
+      }
+      if (!artificital && hand == null)
+      {
+        inputFrame.Hands.Remove(inputFrame.Get(chirality));
       }
     }
   }
