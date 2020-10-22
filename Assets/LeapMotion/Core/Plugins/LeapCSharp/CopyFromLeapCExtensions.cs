@@ -21,7 +21,6 @@ namespace LeapInternal {
       frame.Id = (long)trackingMsg.info.frame_id;
       frame.Timestamp = (long)trackingMsg.info.timestamp;
       frame.CurrentFramesPerSecond = trackingMsg.framerate;
-      frame.DeviceID = trackingMsg.device_id;
 
       frame.ResizeHandList((int)trackingMsg.nHands);
 

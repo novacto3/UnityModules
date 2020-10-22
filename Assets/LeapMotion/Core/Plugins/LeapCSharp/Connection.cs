@@ -10,7 +10,6 @@
 namespace LeapInternal {
   using System;
   using System.Collections.Generic;
-  using System.Diagnostics;
   using System.Runtime.InteropServices;
   using System.Threading;
 
@@ -283,7 +282,6 @@ namespace LeapInternal {
               LEAP_TRACKING_EVENT tracking_evt;
               StructMarshal<LEAP_TRACKING_EVENT>.PtrToStruct(
                 _msg.eventStructPtr, out tracking_evt);
-              tracking_evt.device_id = _msg.deviceID;
               handleTrackingMessage(ref tracking_evt, _msg.deviceID);
               break;
             case eLeapEventType.eLeapEventType_LogEvent:
