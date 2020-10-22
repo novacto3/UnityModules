@@ -189,10 +189,13 @@ namespace Leap.Unity {
         stabilizedPalmPositions.Add(hand.StabilizedPalmPosition * hand.Confidence);
         palmVelocities.Add(hand.PalmVelocity * hand.Confidence);
         palmNormals.Add(hand.PalmNormal * hand.Confidence);
+
+        ProcessQuaternionRotation(ref hand.Rotation);
         virtualHand.Rotation.x += hand.Rotation.x * hand.Confidence;
         virtualHand.Rotation.y += hand.Rotation.y * hand.Confidence;
         virtualHand.Rotation.z += hand.Rotation.z * hand.Confidence;
         virtualHand.Rotation.w += hand.Rotation.w * hand.Confidence;
+
         directions.Add(hand.Direction * hand.Confidence);
         wristPositions.Add(hand.WristPosition * hand.Confidence);
       }
@@ -203,8 +206,6 @@ namespace Leap.Unity {
       }
 
       DivideQuaternion(ref virtualHand.Rotation, virtualHand.Confidence);
-
-      virtualHand.Rotation = virtualHand.Rotation.Normalized;
 
       virtualHand.GrabStrength /= virtualHand.Confidence;
       virtualHand.GrabAngle /= virtualHand.Confidence;
@@ -247,6 +248,8 @@ namespace Leap.Unity {
         directions.Add(hand.Arm.Direction * hand.Confidence);
         length += hand.Arm.Length * hand.Confidence;
         width += hand.Arm.Width * hand.Confidence;
+
+        ProcessQuaternionRotation(ref hand.Arm.Rotation);
         armRotation.x += hand.Arm.Rotation.x * hand.Confidence;
         armRotation.y += hand.Arm.Rotation.y * hand.Confidence;
         armRotation.z += hand.Arm.Rotation.z * hand.Confidence;
@@ -332,6 +335,9 @@ namespace Leap.Unity {
         bonesDirections.Add(bone.Direction * hand.Confidence);
         length += bone.Length * hand.Confidence;
         width += bone.Width * hand.Confidence;
+
+        ProcessQuaternionRotation(ref bone.Rotation);
+
         bonesRotation.x += bone.Rotation.x * hand.Confidence;
         bonesRotation.y += bone.Rotation.y * hand.Confidence;
         bonesRotation.z += bone.Rotation.z * hand.Confidence;
@@ -374,7 +380,18 @@ namespace Leap.Unity {
       quaternion.w /= divider;
     }
 
-    public bool getMergeHands()
+    private void ProcessQuaternionRotation(ref LeapQuaternion quaternion)
+    {
+      if (quaternion.w < 0)
+      {
+        quaternion.x *= -1;
+        quaternion.y *= -1;
+        quaternion.z *= -1;
+        quaternion.w *= -1;
+      }
+    }
+
+    public bool GetMergeHands()
     {
       return mergeHands;
     }

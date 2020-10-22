@@ -20,7 +20,7 @@ namespace Leap.Unity {
 
     public override void ProcessFrame(ref Frame inputFrame)
     {
-      if (alignment != null && alignment.getMergeHands())
+      if (alignment != null && alignment.GetMergeHands())
       {
         //ProcessHand(ref inputFrame, Chirality.Left);
         ProcessHand(ref inputFrame, Chirality.Right);
