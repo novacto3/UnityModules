@@ -206,6 +206,7 @@ namespace Leap.Unity {
       }
 
       DivideQuaternion(ref virtualHand.Rotation, virtualHand.Confidence);
+      virtualHand.Rotation = virtualHand.Rotation.Normalized;
 
       virtualHand.GrabStrength /= virtualHand.Confidence;
       virtualHand.GrabAngle /= virtualHand.Confidence;
@@ -263,7 +264,7 @@ namespace Leap.Unity {
         CenterOfVectors(directions, overallConfidence),
         length / overallConfidence,
         width / overallConfidence,
-        armRotation
+        armRotation.Normalized
       );
     }
     private void ComputeFingers(float overallConfidence, ref Hand newHand, Chirality chirality)
@@ -353,7 +354,7 @@ namespace Leap.Unity {
         length / overallConfidence,
         width / overallConfidence,
         (Bone.BoneType)bonedIndex,
-        bonesRotation
+        bonesRotation.Normalized
      );
     }
 
