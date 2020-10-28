@@ -34,6 +34,10 @@ namespace Leap.Unity {
       if (devices.Length > 1) {
         // Add the set of joints to device-specific lists
         if (autoSamplingEnabled) {
+          if (devices[0].handPoints != null)
+          {
+            Debug.Log(devices[0].handPoints.Count);
+          }
           AddMeasurement();
         }
 
