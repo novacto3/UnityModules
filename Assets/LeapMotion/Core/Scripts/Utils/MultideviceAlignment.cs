@@ -203,7 +203,7 @@ namespace Leap.Unity {
         directions.Add(hand.Direction * hand.Confidence);
         wristPositions.Add(hand.WristPosition * hand.Confidence);
       }
-      if (handsCount == 0 || (virtualHand.Confidence / handsCount) < 0.1)
+      if (handsCount == 0 || (virtualHand.Confidence / handsCount) < 0.3)
       {
          virtualHand = null;
          return;

@@ -450,7 +450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11407378, guid: 39d18871c11b53c4082d8202e3db68a3, type: 3}
       propertyPath: _showArm
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 39d18871c11b53c4082d8202e3db68a3, type: 3}
@@ -1040,7 +1040,7 @@ MonoBehaviour:
   _physicsExtrapolation: 0
   _physicsExtrapolationTime: 0.011111111
   _multipleDeviceMode: 2
-  _specificSerialNumber: 1
+  _specificSerialNumber: 3
   _workerThreadProfiling: 0
 --- !u!224 &452175622 stripped
 RectTransform:
@@ -2280,7 +2280,7 @@ MonoBehaviour:
   _physicsExtrapolation: 0
   _physicsExtrapolationTime: 0.011111111
   _multipleDeviceMode: 2
-  _specificSerialNumber: 3
+  _specificSerialNumber: 2
   _workerThreadProfiling: 0
 --- !u!4 &1142901059 stripped
 Transform:
@@ -2987,9 +2987,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1333888377}
   - component: {fileID: 1333888379}
-  - component: {fileID: 1333888378}
   - component: {fileID: 1333888381}
-  - component: {fileID: 1333888380}
+  - component: {fileID: 1333888378}
   m_Layer: 9
   m_Name: TopControls
   m_TagString: Untagged
@@ -3004,9 +3003,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1333888376}
-  m_LocalRotation: {x: -0.3221635, y: -0.3997489, z: 0.20386507, w: 0.8335769}
-  m_LocalPosition: {x: -2.875, y: 4.358, z: 6.527}
-  m_LocalScale: {x: 0.25, y: 0.19, z: 0.19}
+  m_LocalRotation: {x: -0.3319191, y: -0.3916864, z: 0.22435012, w: 0.82829857}
+  m_LocalPosition: {x: -2.694, y: 4.733, z: 6.536}
+  m_LocalScale: {x: 0.27, y: 0.19, z: 0.19}
   m_Children:
   - {fileID: 44453672}
   - {fileID: 1043285981}
@@ -3016,7 +3015,7 @@ Transform:
   - {fileID: 1489402568}
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: -21.969, y: -59.346, z: 40.107}
+  m_LocalEulerAnglesHint: {x: -21.969, y: -59.346, z: 42.932}
 --- !u!114 &1333888378
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3124,21 +3123,6 @@ MonoBehaviour:
   RetractUI: 0
   MovingReferenceFrame: 0
 --- !u!114 &1333888379
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1333888376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
-  m_DragThreshold: 10
---- !u!114 &1333888380
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3967,7 +3951,7 @@ PrefabInstance:
     - target: {fileID: 114001341821178898, guid: efc6a7f1fd16ee547973384962eb4be8,
         type: 3}
       propertyPath: m_Text
-      value: Best settings
+      value: Best
       objectReference: {fileID: 0}
     - target: {fileID: 224114787147671300, guid: efc6a7f1fd16ee547973384962eb4be8,
         type: 3}
@@ -4727,7 +4711,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1768968773}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 025cc0fa7b46aa541aba29d28d35ac09, type: 3}
   m_Name: 
@@ -4737,7 +4721,7 @@ MonoBehaviour:
   _physicsExtrapolation: 0
   _physicsExtrapolationTime: 0.011111111
   _multipleDeviceMode: 2
-  _specificSerialNumber: 2
+  _specificSerialNumber: 1
   _workerThreadProfiling: 0
 --- !u!4 &1768968775 stripped
 Transform:
@@ -5045,6 +5029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   devices:
   - deviceProvider: {fileID: 425930021}
+  - deviceProvider: {fileID: 1768968774}
   - deviceProvider: {fileID: 1142901058}
   virtualHands: {fileID: 1648089559}
   autocalibrateKey: 8
@@ -5584,6 +5569,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_SizeDelta.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6821264772961067421, guid: 8fe1574003fe03e439aed54c26d4fc28,
+        type: 3}
+      propertyPath: m_Text
+      value: Users
       objectReference: {fileID: 0}
     - target: {fileID: 6860270259209902774, guid: 8fe1574003fe03e439aed54c26d4fc28,
         type: 3}
