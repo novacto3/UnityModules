@@ -33,7 +33,8 @@ namespace Leap {
      * @param transform The transformation to be applied to the copied frame.
      */
     public static Frame TransformedCopy(this Frame frame, LeapTransform transform) {
-      return new Frame().CopyFrom(frame).Transform(transform);
+      // return new Frame().CopyFrom(frame).Transform(transform);
+       return new Frame().CopyFrom(frame);
     }
 
     /**

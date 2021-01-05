@@ -37,7 +37,7 @@ namespace Leap.Unity {
           AddMeasurement();
         }
 
-        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= 50000))
+        if (Input.GetKeyUp(autocalibrateKey) || (devices[0].handPoints != null && devices[0].handPoints.Count >= 400))
         {
           if (!autoSamplingEnabled)
           {
@@ -98,7 +98,7 @@ namespace Leap.Unity {
       bool handInAllFrames = true;
       for (int i = 0; i < devices.Length; i++)
       {
-        Hand rightHand = devices[i].deviceProvider.CurrentFrame.Get(Chirality.Right);
+        Hand rightHand = devices[i].deviceProvider.CurrentFrame.Get(Chirality.Left);
         if (rightHand != null)
         {
           devices[i].currentHand = rightHand;
@@ -111,12 +111,26 @@ namespace Leap.Unity {
 
       if (handInAllFrames)
       {
+
         for (int i = 0; i < devices.Length; i++)
         {
           if (devices[i].handPoints == null)
           {
             devices[i].handPoints = new List<Vector3>();
           }
+            /*for (int j = 0; j < 5; j++)
+            {
+              for (int k = 0; k < 4; k++)
+              {
+                devices[i].currentHand.Fingers[j].bones[k].NextJoint.x = 1 + i + 1 + j + k;
+                devices[i].currentHand.Fingers[j].bones[k].NextJoint.y = 1 + i + 1 + j + k;
+                devices[i].currentHand.Fingers[j].bones[k].NextJoint.z = 1 + i + 1 + j + k;
+                devices[i].currentHand.Fingers[j].bones[k].PrevJoint.x = i + j + 1 + k;
+                devices[i].currentHand.Fingers[j].bones[k].PrevJoint.y = i + j + 1 + k;
+                devices[i].currentHand.Fingers[j].bones[k].PrevJoint.z = i + j + 1 + k;
+              devices[i].currentHand.Fingers[j].bones[k].Center = (devices[i].currentHand.Fingers[j].bones[k].PrevJoint + devices[i].currentHand.Fingers[j].bones[k].NextJoint) / 2.0f;
+              }
+          }*/
           for (int j = 0; j < 5; j++)
           {
             for (int k = 0; k < 4; k++)
@@ -141,6 +155,7 @@ namespace Leap.Unity {
             solver.SolveKabsch(devices[i].handPoints, refValues, 200);
 
           devices[i].deviceProvider.transform.Transform(deviceToOriginDeviceMatrix);
+          devices[i].handPoints.Clear();
         }
         devices[0].handPoints.Clear();
       }

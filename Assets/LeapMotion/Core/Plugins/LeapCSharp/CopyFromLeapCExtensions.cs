@@ -29,6 +29,35 @@ namespace LeapInternal {
         StructMarshal<LEAP_HAND>.ArrayElementToStruct(trackingMsg.pHands, i, out hand);
         frame.Hands[i].CopyFrom(ref hand, frame.Id);
       }
+      
+      /*if (frame.DeviceID == 1) {
+        for (int i = 0; i < frame.Hands.Count; ++i) {
+          frame.Hands[i].PalmPosition.x = 7.05985785f;
+          frame.Hands[i].PalmPosition.y = 327.278412f;
+          frame.Hands[i].PalmPosition.z = 27.2955627f;
+        }
+      }
+      if (frame.DeviceID == 2) {
+        for (int i = 0; i < frame.Hands.Count; ++i) {
+          frame.Hands[i].PalmPosition.x = 25.2091427f;
+          frame.Hands[i].PalmPosition.y = 339.905243f;
+          frame.Hands[i].PalmPosition.z = -73.9415894f;
+        }
+      }
+      for (int i = 0; i < frame.Hands.Count; ++i) {
+        for (int j = 0; j < 5; j++)
+        {
+          for (int k = 0; k < 4; k++)
+          {
+            frame.Hands[i].Fingers[j].bones[k].NextJoint.x = 1 + frame.DeviceID + j + k;
+            frame.Hands[i].Fingers[j].bones[k].NextJoint.y = 1 + frame.DeviceID + j + k;
+            frame.Hands[i].Fingers[j].bones[k].NextJoint.z = 1 + frame.DeviceID + j + k;
+            frame.Hands[i].Fingers[j].bones[k].PrevJoint.x = frame.DeviceID + j + k;
+            frame.Hands[i].Fingers[j].bones[k].PrevJoint.y = frame.DeviceID + j + k;
+            frame.Hands[i].Fingers[j].bones[k].PrevJoint.z = frame.DeviceID + j + k;
+          }
+        }
+      }*/
 
       return frame;
     }
@@ -60,6 +89,22 @@ namespace LeapInternal {
       hand.Rotation = leapHand.palm.orientation.ToLeapQuaternion();
       hand.Direction = leapHand.palm.direction.ToLeapVector();
       hand.WristPosition = hand.Arm.NextJoint;
+
+      /*hand.Confidence = leapHand.confidence;
+      hand.GrabStrength = 0;
+      hand.GrabAngle = 0.3f;
+      hand.PinchStrength = 0.3f;
+      hand.PinchDistance = 61f;
+      hand.PalmWidth = 88;
+      hand.IsLeft = leapHand.type == eLeapHandType.eLeapHandType_Left;
+      hand.TimeVisible = (float)(leapHand.visible_time * 1e-6);
+      hand.PalmPosition = LEAP_VECTOR{ { -64.} };
+      hand.StabilizedPalmPosition = leapHand.palm.stabilized_position.ToLeapVector();
+      hand.PalmVelocity = leapHand.palm.velocity.ToLeapVector();
+      hand.PalmNormal = leapHand.palm.normal.ToLeapVector();
+      hand.Rotation = leapHand.palm.orientation.ToLeapQuaternion();
+      hand.Direction = leapHand.palm.direction.ToLeapVector();
+      hand.WristPosition = hand.Arm.NextJoint;*/
 
       hand.Fingers[0].CopyFrom(leapHand.thumb, Leap.Finger.FingerType.TYPE_THUMB, hand.Id, hand.TimeVisible);
       hand.Fingers[1].CopyFrom(leapHand.index, Leap.Finger.FingerType.TYPE_INDEX, hand.Id, hand.TimeVisible);
