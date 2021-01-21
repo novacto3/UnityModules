@@ -45,6 +45,12 @@ namespace Leap.Unity.Internal {
     void extractRotation(Vector3[] A, ref Quaternion q, int iters = 9) {
       for (int iter = 0; iter < iters; iter++) {
         Vector3[] R = MatrixFromQuaternion(q, QuatBasis);
+        /*Vector3 test1 = Vector3.Cross(R[0], A[0]);
+        Vector3 test2 = Vector3.Cross(R[1], A[1]);
+        Vector3 test3 = Vector3.Cross(R[2], A[2]);
+        float test4 = Vector3.Dot(R[0], A[0]);
+        float test5 = Vector3.Dot(R[1], A[1]);
+        float test6 = Vector3.Dot(R[2], A[2]);*/
         Vector3 omega = (Vector3.Cross(R[0], A[0]) +
                          Vector3.Cross(R[1], A[1]) +
                          Vector3.Cross(R[2], A[2])) *
