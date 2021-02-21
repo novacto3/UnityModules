@@ -37,7 +37,7 @@ namespace Leap.Unity{
     private int frames_disconnected_ = 0;
   
     void Start() {
-      leap_controller_ = new Controller();
+      leap_controller_ = new Controller(0);
       SetAlpha(0.0f);
     }
   

@@ -9,6 +9,7 @@
 
 using UnityEngine;
 using Leap.Unity.Attributes;
+using System.Collections.Generic;
 
 namespace Leap.Unity.Examples {
 
@@ -44,9 +45,10 @@ namespace Leap.Unity.Examples {
     public void Update() {
       if (_thisProvidersID == 0) {
         DeviceList devices = _provider.GetLeapController().Devices;
-        for (uint i = 0; i < devices.Count; i++) {
-          if (devices[(int)i].SerialNumber.Contains(_specificSerialNumber)) {
-            _thisProvidersID = i + 1;
+        uint i = 0;
+        foreach (KeyValuePair<uint, Device> device in devices) {
+          if (devices[device.Key].SerialNumber.Contains(_specificSerialNumber)) {
+            _thisProvidersID = (i++) + 1;
             break;
           }
         }

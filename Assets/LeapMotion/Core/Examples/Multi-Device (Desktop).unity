@@ -2347,7 +2347,6 @@ MonoBehaviour:
   _frameOptimization: 0
   _physicsExtrapolation: 0
   _physicsExtrapolationTime: 0.011111111
-  _multipleDeviceMode: 2
   _specificSerialNumber: 1
   _workerThreadProfiling: 0
 --- !u!1001 &514824080
@@ -4334,7 +4333,6 @@ MonoBehaviour:
   _frameOptimization: 0
   _physicsExtrapolation: 0
   _physicsExtrapolationTime: 0.011111111
-  _multipleDeviceMode: 2
   _specificSerialNumber: 3
   _workerThreadProfiling: 0
 --- !u!4 &1142901059 stripped
@@ -5496,7 +5494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 166326, guid: b9c7aaf0d314cb847a3b2a20e893f1b6, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 432918, guid: b9c7aaf0d314cb847a3b2a20e893f1b6, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5682,11 +5680,11 @@ MonoBehaviour:
   _templateLayer:
     layerIndex: 0
   _interactionLayer:
-    layerIndex: 8
-  _interactionNoContactLayer:
-    layerIndex: 9
-  _contactBoneLayer:
     layerIndex: 10
+  _interactionNoContactLayer:
+    layerIndex: 11
+  _contactBoneLayer:
+    layerIndex: 12
   _drawControllerRuntimeGizmos: 0
 --- !u!4 &1621187264
 Transform:
@@ -8107,7 +8105,6 @@ MonoBehaviour:
   _frameOptimization: 0
   _physicsExtrapolation: 0
   _physicsExtrapolationTime: 0.011111111
-  _multipleDeviceMode: 2
   _specificSerialNumber: 2
   _workerThreadProfiling: 0
 --- !u!4 &1768968775 stripped

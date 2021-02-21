@@ -14,11 +14,7 @@ using System.Runtime.InteropServices;
 
 namespace LeapInternal {
 
-  [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-  public delegate IntPtr Allocate(UInt32 size, eLeapAllocatorType typeHint, IntPtr state);
-
-  [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-  public delegate void Deallocate(IntPtr buffer, IntPtr state);
+  // Allocate and Deallocate function delegates moved to LeapC
 
   public static class MemoryManager {
 

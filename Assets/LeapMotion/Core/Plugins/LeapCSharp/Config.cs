@@ -28,8 +28,8 @@ namespace Leap {
     /// Note that the Controller.Config provides a properly initialized Config object already.
     /// @since 3.0
     /// </summary>
-    public Config(int connectionKey) {
-      _connection = Connection.GetConnection(connectionKey);
+    public Config() {
+      _connection = Connection.GetConnection();
       _connection.LeapConfigChange += handleConfigChange;
       _connection.LeapConfigResponse += handleConfigResponse;
     }

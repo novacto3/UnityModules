@@ -82,19 +82,7 @@ namespace Leap.Unity
     [SerializeField]
     protected float _physicsExtrapolationTime = 1.0f / 90.0f;
 
-    public enum MultipleDeviceMode
-    {
-      Disabled,
-      All,
-      Specific
-    }
-
-    [Tooltip("When set to `All`, provider will receive data from all connected devices.")]
-    [EditTimeOnly]
-    [SerializeField]
-    protected MultipleDeviceMode _multipleDeviceMode = MultipleDeviceMode.Disabled;
-
-    [Tooltip("When Multiple Device Mode is set to `Specific`, the provider will " +
+    [Tooltip("The provider will " +
       "receive data from only the devices that contain this in their serial number.  " +
       "If the serial number is unknown, simply specify which DeviceID to " +
       "sample from (0 is invalid, 1 and above are valid).")]
@@ -171,7 +159,7 @@ namespace Leap.Unity
         {
           foreach (var device in _leapController.Devices)
           {
-            value(device);
+            value(device.Value);
           }
         }
         _onDeviceSafe += value;
@@ -319,8 +307,6 @@ namespace Leap.Unity
     {
       _fixedOffset.delay = 0.4f;
       _smoothedTrackingLatency.SetBlend(0.99f, 0.0111f);
-      useInterpolation = _multipleDeviceMode.Equals(MultipleDeviceMode.All) ?
-        false : useInterpolation;
     }
 
     protected virtual void Start()
@@ -440,14 +426,15 @@ namespace Leap.Unity
     {
       if (_leapController != null)
       {
-        if (isPaused)
+        //TODO
+        /*if (isPaused)
         {
           _leapController.StopConnection();
         }
         else
         {
           _leapController.StartConnection();
-        }
+        }*/
       }
     }
 
@@ -568,35 +555,24 @@ namespace Leap.Unity
         return;
       }
 
-      _leapController = new Controller(_specificSerialNumber.GetHashCode(),
-        _multipleDeviceMode != MultipleDeviceMode.Disabled);
-      _leapController.Device += (s, e) => {
+      uint id = 0;
+      uint.TryParse(_specificSerialNumber, out id);
+
+      if (id > 0)
+      {
+        _leapController = new Controller(id);
+      } else
+      {
+        _leapController = new Controller(_specificSerialNumber);
+      }
+
+      _leapController.Device += (s, e) =>
+      {
         if (_onDeviceSafe != null)
         {
           _onDeviceSafe(e.Device);
         }
       };
-
-      if (_multipleDeviceMode == MultipleDeviceMode.All)
-      {
-        _onDeviceSafe += (d) => {
-          _leapController.SubscribeToDeviceEvents(d);
-        };
-      }
-      else if (_multipleDeviceMode == MultipleDeviceMode.Specific)
-      {
-        _onDeviceSafe += (d) => {
-          int DeviceID = 0;
-          _numDevicesSeen++;
-          if ((int.TryParse(_specificSerialNumber, out DeviceID) &&
-              _numDevicesSeen == (uint)DeviceID) ||
-             (_specificSerialNumber.Length > 1 &&
-              d.SerialNumber.Contains(_specificSerialNumber)))
-          {
-            _leapController.SubscribeToDeviceEvents(d);
-          }
-        };
-      }
 
       if (_leapController.IsConnected)
       {
@@ -631,8 +607,6 @@ namespace Leap.Unity
         {
           _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
         }
-        _leapController.UnsubscribeFromAllDevices();
-        _leapController.StopConnection();
         _leapController = null;
       }
     }

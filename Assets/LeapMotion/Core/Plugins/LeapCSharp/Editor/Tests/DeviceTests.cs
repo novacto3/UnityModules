@@ -9,6 +9,7 @@
 
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 
 namespace Leap.LeapCSharp.Tests {
   [TestFixture()]
@@ -17,7 +18,7 @@ namespace Leap.LeapCSharp.Tests {
 
     [OneTimeSetUp]
     public void Init() {
-      controller = new Controller();
+      controller = new Controller(0);
       System.Threading.Thread.Sleep(500);
     }
 
@@ -42,8 +43,8 @@ namespace Leap.LeapCSharp.Tests {
     public void DeviceList_operator_index() {
       // !!!DeviceList_operator_index
       DeviceList allDevices = controller.Devices;
-      for (int index = 0; index < allDevices.Count; index++) {
-        Console.WriteLine(allDevices[index]);
+      foreach (KeyValuePair<uint, Device> device in allDevices) {
+        Console.WriteLine(device.Key);
       }
       // !!!END
 

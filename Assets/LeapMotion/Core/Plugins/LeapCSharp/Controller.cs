@@ -40,8 +40,9 @@ namespace Leap {
     IController {
     Connection _connection;
     bool _disposed = false;
-    bool _supportsMultipleDevices = true;
     Config _config;
+    uint id;
+    Device device;
 
     /// <summary>
     /// The SynchronizationContext used for dispatching events.
@@ -355,14 +356,16 @@ namespace Leap {
       _disposed = true;
     }
 
-    /// <summary>
-    /// Constructs a Controller object.
-    /// 
-    /// The default constructor uses a connection key of 0.
-    /// 
-    /// @since 1.0
-    /// </summary>
-    public Controller(bool supportsMultipleDevices = true) : this(0) { }
+    public Controller(string sn)
+    {
+      _connection = Connection.GetConnection();
+      _connection.EventContext = SynchronizationContext.Current;
+
+      _connection.LeapInit += OnInit;
+      _connection.LeapConnection += OnConnect;
+      _connection.LeapConnectionLost += OnDisconnect;
+      id = _connection.GetDeviceId(sn);
+    }
 
     /// <summary>
     /// Constructs a Controller object using the specified connection key.
@@ -371,46 +374,20 @@ namespace Leap {
     /// to the service. In general, an application should not use more than one connection
     /// for all its controllers. Each connection keeps its own cache of frames and images.
     /// 
-    /// @param connectionKey An identifier specifying the connection to use. If a
-    /// connection with the specified key already exists, that connection is used.
-    /// Otherwise, a new connection is created.
     /// @since 3.0
     /// </summary>
-    public Controller(int connectionKey, bool supportsMultipleDevices = true) {
-      _connection = Connection.GetConnection(connectionKey);
+    public Controller(uint id) {
+      _connection = Connection.GetConnection();
       _connection.EventContext = SynchronizationContext.Current;
 
       _connection.LeapInit += OnInit;
       _connection.LeapConnection += OnConnect;
       _connection.LeapConnectionLost += OnDisconnect;
-
-      _supportsMultipleDevices = supportsMultipleDevices;
-
       _connection.Start();
-    }
 
-    /// <summary>
-    /// Starts the connection.
-    /// 
-    /// A connection starts automatically when created, but you can
-    /// use this function to restart the connection after stopping it.
-    /// 
-    /// @since 3.0
-    /// </summary>
-    public void StartConnection() {
-      _connection.Start(_supportsMultipleDevices);
-    }
 
-    /// <summary>
-    /// Stops the connection.
-    /// 
-    /// No more frames or other events are received from a stopped connection. You can
-    /// restart with StartConnection().
-    /// 
-    /// @since 3.0
-    /// </summary>
-    public void StopConnection() {
-      _connection.Stop();
+      device = _connection.GetDevice(id);
+      this.id = id;
     }
 
     /// <summary>
@@ -502,9 +479,9 @@ namespace Leap {
     /// it, the user provides a frame object to be filled with data instead.
     /// </summary>
     public void Frame(Frame toFill, int history = 0) {
-      LEAP_TRACKING_EVENT trackingEvent;
+      Frame trackingEvent;
       _connection.Frames.Get(out trackingEvent, history);
-      toFill.CopyFrom(ref trackingEvent);
+      toFill.CopyFrom(trackingEvent);
     }
 
     /// <summary>
@@ -515,9 +492,9 @@ namespace Leap {
     /// tracked frame.
     /// </summary>
     public long FrameTimestamp(int history = 0) {
-      LEAP_TRACKING_EVENT trackingEvent;
+      Frame trackingEvent;
       _connection.Frames.Get(out trackingEvent, history);
-      return trackingEvent.info.timestamp;
+      return trackingEvent.Timestamp;
     }
 
     /// <summary>
@@ -532,14 +509,14 @@ namespace Leap {
     /// Returns the Frame at the specified time, interpolating the data between existing frames, if necessary.
     /// </summary>
     public Frame GetInterpolatedFrame(Int64 time) {
-      return _connection.GetInterpolatedFrame(time);
+      return _connection.GetInterpolatedFrame(id, time);
     }
 
     /// <summary>
     /// Fills the Frame with data taken at the specified time, interpolating the data between existing frames, if necessary.
     /// </summary>
     public void GetInterpolatedFrame(Frame toFill, Int64 time) {
-      _connection.GetInterpolatedFrame(toFill, time);
+      _connection.GetInterpolatedFrame(id, toFill, time);
     }
 
     /// <summary>
@@ -562,52 +539,6 @@ namespace Leap {
     /// </summary>
     public void GetInterpolatedEyePositions(ref LEAP_EYE_EVENT toFill, Int64 time) {
       _connection.GetInterpolatedEyePositions(ref toFill, time);
-    }
-
-    /// <summary>
-    /// Subscribes to the events coming from an individual device
-    /// 
-    /// If this is not called, only the primary device will be subscribed.
-    /// Will automatically unsubscribe the primary device if this is called 
-    /// on a secondary device, but not a primary one.  
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void SubscribeToDeviceEvents(Device device) {
-      _connection.SubscribeToDeviceEvents(device);
-    }
-
-    /// <summary>
-    /// Unsubscribes from the events coming from an individual device
-    /// 
-    /// This can be called safely, even if the device has not been subscribed.
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void UnsubscribeFromDeviceEvents(Device device) {
-      _connection.UnsubscribeFromDeviceEvents(device);
-    }
-
-    /// <summary>
-    /// Subscribes to the events coming from all devices
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void SubscribeToAllDevices() {
-      for (int i = 1; i < Devices.Count; i++) {
-        _connection.SubscribeToDeviceEvents(Devices[i]);
-      }
-    }
-
-    /// <summary>
-    /// Unsubscribes from the events coming from all devices
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void UnsubscribeFromAllDevices() {
-      for (int i = 1; i < Devices.Count; i++) {
-        _connection.UnsubscribeFromDeviceEvents(Devices[i]);
-      }
     }
 
     public void TelemetryProfiling(ref LEAP_TELEMETRY_DATA telemetryData) {
@@ -641,7 +572,7 @@ namespace Leap {
     }
 
     public void GetInterpolatedFrameFromTime(Frame toFill, Int64 time, Int64 sourceTime) {
-      _connection.GetInterpolatedFrameFromTime(toFill, time, sourceTime);
+      _connection.GetInterpolatedFrameFromTime(id, toFill, time, sourceTime);
     }
 
     /// <summary>
@@ -684,7 +615,7 @@ namespace Leap {
     public Config Config {
       get {
         if (_config == null)
-          _config = new Config(this._connection.ConnectionKey);
+          _config = new Config();
         return _config;
       }
     }

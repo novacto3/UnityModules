@@ -18,7 +18,7 @@ namespace Leap {
   /// @since 1.0
   /// </summary>
   public class DeviceList :
-    List<Device> {
+    Dictionary<uint, Device> {
 
     /// <summary>
     /// Constructs an empty list of devices.
@@ -29,43 +29,49 @@ namespace Leap {
     /// <summary>
     /// For internal use only.
     /// </summary>
-    public Device FindDeviceByHandle(IntPtr deviceHandle) {
-      for (int d = 0; d < this.Count; d++) {
-        if (this[d].Handle == deviceHandle)
-          return this[d];
+    public KeyValuePair<uint, Device>? FindDeviceByHandle(IntPtr handle)
+    {
+      foreach (KeyValuePair<uint, Device> device in this)
+      {
+        if (device.Value.Handle == handle)
+          return device;
       }
       return null;
     }
 
     /// <summary>
-    /// The device that is currently streaming tracking data.
-    /// If no streaming devices are found, returns null
+    /// For internal use only.
     /// </summary>
-    public Device ActiveDevice {
-      get {
-        if (Count == 1) {
-          return this[0];
-        }
-
-        for (int d = 0; d < Count; d++) {
-          if (this[d].IsStreaming) {
-            return this[d];
-          }
-        }
-
-        return null;
+    public KeyValuePair<uint, Device>? FindDeviceBySerialNumber(string serialNumber) {
+      foreach(KeyValuePair<uint,Device> device in this)
+      {
+        if (device.Value.SerialNumber == serialNumber)
+          return device;
       }
+      return null;
     }
 
     /// <summary>
     /// For internal use only.
     /// </summary>
-    public void AddOrUpdate(Device device) {
-      Device existingDevice = FindDeviceByHandle(device.Handle);
+    public Device FindDeviceById(uint deviceId)
+    {
+      if (ContainsKey(deviceId))
+      {
+        return this[deviceId];
+      }
+      return null;
+    }
+
+    /// <summary>
+    /// For internal use only.
+    /// </summary>
+    public void AddOrUpdate(uint id, Device device) {
+      Device existingDevice = FindDeviceById(id);
       if (existingDevice != null) {
         existingDevice.Update(device);
       } else {
-        Add(device);
+        Add(id, device);
       }
     }
 

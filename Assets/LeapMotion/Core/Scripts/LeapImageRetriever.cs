@@ -45,8 +45,8 @@ namespace Leap.Unity {
     [FormerlySerializedAs("gammaCorrection")]
     private float _gammaCorrection = 1.0f;
 
-    Dictionary<int, IntPtr> _deviceHandles = new Dictionary<int, IntPtr>();
-    public IntPtr GetDeviceHandle(int deviceID) {
+    Dictionary<uint, IntPtr> _deviceHandles = new Dictionary<uint, IntPtr>();
+    public IntPtr GetDeviceHandle(uint deviceID) {
       IntPtr handle = IntPtr.Zero;
       if(_deviceHandles.TryGetValue(deviceID, out handle)) {
         return handle;
@@ -206,14 +206,14 @@ namespace Leap.Unity {
     }
 
     private void initializeDeviceHandles() {
-      var connection = Connection.GetConnection(0);
-      for (int i = 0; i < connection.Devices.Count; i++) {
-        bool containsHandle = _deviceHandles.ContainsValue(connection.Devices[i].Handle);
-        bool containsKey = _deviceHandles.ContainsKey(i + 1);
+      var connection = Connection.GetConnection();
+      foreach (KeyValuePair<uint, Device> device in connection.Devices) {
+        bool containsHandle = _deviceHandles.ContainsValue(device.Value.Handle);
+        bool containsKey = _deviceHandles.ContainsKey(device.Key + 1);
 
         if (!containsHandle) {
-          if (containsKey) _deviceHandles.Remove(i + 1);
-          _deviceHandles.Add(i + 1, connection.Devices[i].Handle);
+          if (containsKey) _deviceHandles.Remove(device.Key + 1);
+          _deviceHandles.Add(device.Key + 1, device.Value.Handle);
 
           LeapTextureData textureData = new LeapTextureData();
           textureData.leapImageRetriever = this;
@@ -224,7 +224,7 @@ namespace Leap.Unity {
 
     private void onImageReady(object sender, ImageEventArgs args) {
       Image image = args.image;
-      if(!_deviceHandles.ContainsKey((int)image.DeviceID)) initializeDeviceHandles();
+      if(!_deviceHandles.ContainsKey(image.DeviceID)) initializeDeviceHandles();
       _imageQueue.TryEnqueue(image);
     }
 

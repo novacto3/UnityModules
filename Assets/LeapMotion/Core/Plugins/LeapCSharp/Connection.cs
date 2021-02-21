@@ -15,16 +15,16 @@ namespace LeapInternal {
 
   using Leap;
 
-  public class Connection {
-    private static Dictionary<int, Connection> connectionDictionary =
-      new Dictionary<int, Connection>();
+  public class SimpleConnection {
+    private static Dictionary<int, SimpleConnection> connectionDictionary =
+      new Dictionary<int, SimpleConnection>();
 
     //Left-right precalculated offsets
     private static long _handIdOffset;
     private static long _handPositionOffset;
     private static long _handOrientationOffset;
 
-    static Connection() {
+    static SimpleConnection() {
       _handIdOffset = Marshal.OffsetOf(typeof(LEAP_HAND), "id").ToInt64();
 
       long palmOffset = Marshal.OffsetOf(typeof(LEAP_HAND), "palm").ToInt64();
@@ -34,10 +34,10 @@ namespace LeapInternal {
         .ToInt64() + palmOffset;
     }
 
-    public static Connection GetConnection(int connectionKey = 0) {
-      Connection conn;
+    public static SimpleConnection GetConnection(int connectionKey = 0) {
+      SimpleConnection conn;
       if (!connectionDictionary.TryGetValue(connectionKey, out conn)) {
-        conn = new Connection(connectionKey);
+        conn = new SimpleConnection(connectionKey);
         connectionDictionary.Add(connectionKey, conn);
       }
       return conn;
@@ -131,11 +131,11 @@ namespace LeapInternal {
       _disposed = true;
     }
 
-    ~Connection() {
+    ~SimpleConnection() {
       Dispose(false);
     }
 
-    private Connection(int connectionKey) {
+    private SimpleConnection(int connectionKey) {
       ConnectionKey = connectionKey;
       _leapConnection = IntPtr.Zero;
 
@@ -521,7 +521,7 @@ namespace LeapInternal {
           Marshal.PtrToStringAnsi(deviceInfo.serial)
         );
         Marshal.FreeCoTaskMem(deviceInfo.serial);
-        _devices.AddOrUpdate(apiDevice);
+        //_devices.AddOrUpdate(apiDevice);
 
         if (LeapDevice != null) {
           LeapDevice.DispatchOnContext(this, EventContext,
@@ -531,7 +531,7 @@ namespace LeapInternal {
     }
 
     private void handleLostDevice(ref LEAP_DEVICE_EVENT deviceMsg) {
-      Device lost = _devices.FindDeviceByHandle(deviceMsg.device.connectionHandle);
+      /*Device lost = _devices.FindDeviceByHandle(deviceMsg.device.connectionHandle);
       if (lost != null) {
         _devices.Remove(lost);
         UnityEngine.Debug.Log("Lost a device.");
@@ -540,7 +540,7 @@ namespace LeapInternal {
           LeapDeviceLost.DispatchOnContext(this, EventContext,
             new DeviceEventArgs(lost));
         }
-      }
+      }*/
     }
 
     private void handleFailedDevice(ref LEAP_DEVICE_FAILURE_EVENT deviceMsg) {
@@ -567,9 +567,9 @@ namespace LeapInternal {
           failureMessage = "Device failed for an unknown reason";
           break;
       }
-      Device failed = _devices.FindDeviceByHandle(deviceMsg.hDevice);
-      if (failed != null) {
-        _devices.Remove(failed);
+      KeyValuePair<uint, Device>? failed = _devices.FindDeviceByHandle(deviceMsg.hDevice);
+      if (failed.HasValue) {
+        _devices.Remove(failed.Value.Key);
         UnityEngine.Debug.Log("Removed a failed device.");
       }
 
