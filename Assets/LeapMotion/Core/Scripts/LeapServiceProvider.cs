@@ -568,7 +568,8 @@ namespace Leap.Unity
         return;
       }
 
-      _leapController = new Controller(_specificSerialNumber.GetHashCode(),
+      //TODO device ID
+      _leapController = new Controller(1,
         _multipleDeviceMode != MultipleDeviceMode.Disabled);
       _leapController.Device += (s, e) => {
         if (_onDeviceSafe != null)
@@ -577,26 +578,18 @@ namespace Leap.Unity
         }
       };
 
-      if (_multipleDeviceMode == MultipleDeviceMode.All)
+      /*_onDeviceSafe += (d) =>
       {
-        _onDeviceSafe += (d) => {
-          _leapController.SubscribeToDeviceEvents(d);
-        };
-      }
-      else if (_multipleDeviceMode == MultipleDeviceMode.Specific)
-      {
-        _onDeviceSafe += (d) => {
-          int DeviceID = 0;
-          _numDevicesSeen++;
-          if ((int.TryParse(_specificSerialNumber, out DeviceID) &&
-              _numDevicesSeen == (uint)DeviceID) ||
-             (_specificSerialNumber.Length > 1 &&
-              d.SerialNumber.Contains(_specificSerialNumber)))
-          {
-            _leapController.SubscribeToDeviceEvents(d);
-          }
-        };
-      }
+        int DeviceID = 0;
+        _numDevicesSeen++;
+        if ((int.TryParse(_specificSerialNumber, out DeviceID) &&
+            _numDevicesSeen == (uint)DeviceID) ||
+           (_specificSerialNumber.Length > 1 &&
+            d.SerialNumber.Contains(_specificSerialNumber)))
+        {
+          //_leapController.SubscribeToDeviceEvents(d);
+        }
+      };*/
 
       if (_leapController.IsConnected)
       {
@@ -631,7 +624,6 @@ namespace Leap.Unity
         {
           _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_OPTIMIZE_HMD);
         }
-        _leapController.UnsubscribeFromAllDevices();
         _leapController.StopConnection();
         _leapController = null;
       }

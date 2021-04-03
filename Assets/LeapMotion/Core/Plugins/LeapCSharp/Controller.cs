@@ -398,7 +398,7 @@ namespace Leap {
     /// @since 3.0
     /// </summary>
     public void StartConnection() {
-      _connection.Start(_supportsMultipleDevices);
+      _connection.Start();
     }
 
     /// <summary>
@@ -564,52 +564,6 @@ namespace Leap {
       _connection.GetInterpolatedEyePositions(ref toFill, time);
     }
 
-    /// <summary>
-    /// Subscribes to the events coming from an individual device
-    /// 
-    /// If this is not called, only the primary device will be subscribed.
-    /// Will automatically unsubscribe the primary device if this is called 
-    /// on a secondary device, but not a primary one.  
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void SubscribeToDeviceEvents(Device device) {
-      _connection.SubscribeToDeviceEvents(device);
-    }
-
-    /// <summary>
-    /// Unsubscribes from the events coming from an individual device
-    /// 
-    /// This can be called safely, even if the device has not been subscribed.
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void UnsubscribeFromDeviceEvents(Device device) {
-      _connection.UnsubscribeFromDeviceEvents(device);
-    }
-
-    /// <summary>
-    /// Subscribes to the events coming from all devices
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void SubscribeToAllDevices() {
-      for (int i = 1; i < Devices.Count; i++) {
-        _connection.SubscribeToDeviceEvents(Devices[i]);
-      }
-    }
-
-    /// <summary>
-    /// Unsubscribes from the events coming from all devices
-    /// 
-    /// @since 4.1
-    /// </summary>
-    public void UnsubscribeFromAllDevices() {
-      for (int i = 1; i < Devices.Count; i++) {
-        _connection.UnsubscribeFromDeviceEvents(Devices[i]);
-      }
-    }
-
     public void TelemetryProfiling(ref LEAP_TELEMETRY_DATA telemetryData) {
       _connection.TelemetryProfiling(ref telemetryData);
     }
@@ -651,7 +605,7 @@ namespace Leap {
     /// @since 2.2.7
     /// </summary>
     public long Now() {
-      return LeapC.GetNow();
+      return _connection.Now();
     }
 
     /// <summary>
