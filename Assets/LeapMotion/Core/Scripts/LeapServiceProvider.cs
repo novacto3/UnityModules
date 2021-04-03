@@ -541,7 +541,7 @@ namespace Leap.Unity
         return;
       }
 
-      _leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
+      //_leapController.ClearPolicy(Controller.PolicyFlag.POLICY_DEFAULT);
     }
 
     /// <summary>

@@ -360,8 +360,8 @@ namespace Leap {
       _connection = Connection.GetConnection();
       _connection.EventContext = SynchronizationContext.Current;
 
-      _connection.LeapInit += OnInit;
-      _connection.LeapConnection += OnConnect;
+      _hasInitialized = true;
+      _hasConnected = true;
       _connection.LeapConnectionLost += OnDisconnect;
       id = _connection.GetDeviceId(sn);
     }
@@ -377,10 +377,9 @@ namespace Leap {
     /// </summary>
     public Controller(uint id) {
       _connection = Connection.GetConnection();
-      _connection.EventContext = SynchronizationContext.Current;
 
-      _connection.LeapInit += OnInit;
-      _connection.LeapConnection += OnConnect;
+      _hasInitialized = true;
+      _hasConnected = true;
       _connection.LeapConnectionLost += OnDisconnect;
 
       this.id = id;
@@ -701,15 +700,8 @@ namespace Leap {
       POLICY_MAP_POINTS = (1 << 7),
     }
 
-    protected virtual void OnInit(object sender, LeapEventArgs eventArgs) {
-      _hasInitialized = true;
-    }
-
-    protected virtual void OnConnect(object sender, ConnectionEventArgs eventArgs) {
-      _hasConnected = true;
-    }
-
     protected virtual void OnDisconnect(object sender, ConnectionLostEventArgs eventArgs) {
+      //TODO
       _hasInitialized = false;
       _hasConnected = false;
     }

@@ -33,7 +33,10 @@ namespace LeapInternal
     {
       if (connection == null)
       {
-        connection = new Connection();
+        connection = new Connection
+        {
+          EventContext = SynchronizationContext.Current
+        };
       }
       return connection;
     }
@@ -106,6 +109,7 @@ namespace LeapInternal
     public void Dispose()
     {
       Dispose(true);
+      wrapper.Dispose();
       GC.SuppressFinalize(this);
     }
 
@@ -118,8 +122,6 @@ namespace LeapInternal
       if (disposing)
       {
       }
-
-      Stop();
 
       _disposed = true;
     }
@@ -146,13 +148,13 @@ namespace LeapInternal
             OnFailedDevice, OnFrame, OnLogMessage, OnCalibrationSample, context);
           UnityEngine.Debug.Log("MultiLeap initialization successful.");
           isConnected = true;
-          Thread.Sleep(4000);
+          /*Thread.Sleep(4000);
           int a = Wrapper.Test();
           UnityEngine.Debug.Log(Wrapper.Test());
           Device[] devices = null;
           int[] ids = null;
           wrapper.GetDevices(ref devices, ref ids);
-          UnityEngine.Debug.Log("Found " + devices.Length + " devices.");
+          UnityEngine.Debug.Log("Found " + devices.Length + " devices.");*/
         }
         catch (Exception e)
         {
