@@ -42,7 +42,6 @@ namespace Leap {
     bool _disposed = false;
     Config _config;
     uint id;
-    Device device;
 
     /// <summary>
     /// The SynchronizationContext used for dispatching events.
@@ -383,10 +382,7 @@ namespace Leap {
       _connection.LeapInit += OnInit;
       _connection.LeapConnection += OnConnect;
       _connection.LeapConnectionLost += OnDisconnect;
-      _connection.Start();
 
-
-      device = _connection.GetDevice(id);
       this.id = id;
     }
 

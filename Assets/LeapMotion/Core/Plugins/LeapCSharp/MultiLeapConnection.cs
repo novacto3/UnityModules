@@ -132,19 +132,21 @@ namespace LeapInternal
     private Connection()
     {
       Frames = new CircularObjectBuffer<Frame>(_frameBufferLength);
+      Start();
     }
 
     public void Start()
     {
+      IntPtr context = new IntPtr(256);
       if (!isConnected)
       {
         try
         {
           wrapper = new Wrapper(OnConnection, OnConnectionLost, OnDevice, OnLostDevice,
-            OnFailedDevice, OnFrame, OnLogMessage, OnCalibrationSample);
+            OnFailedDevice, OnFrame, OnLogMessage, OnCalibrationSample, context);
           UnityEngine.Debug.Log("MultiLeap initialization successful.");
           isConnected = true;
-          Thread.Sleep(2000);
+          Thread.Sleep(4000);
           int a = Wrapper.Test();
           UnityEngine.Debug.Log(Wrapper.Test());
           Device[] devices = null;
@@ -167,7 +169,7 @@ namespace LeapInternal
       isConnected = false;
     }
 
-    private void OnFrame(Frame frame)
+    private void OnFrame(Frame frame, IntPtr context)
     {
       Frames.Put(ref frame);
 
@@ -285,7 +287,7 @@ namespace LeapInternal
       Marshal.FreeHGlobal(trackingBuffer);*/
     }
 
-    private void OnConnection()
+    private void OnConnection(IntPtr context)
     {
       if (_leapConnectionEvent != null)
       {
@@ -294,7 +296,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnConnectionLost()
+    private void OnConnectionLost(IntPtr context)
     {
       if (LeapConnectionLost != null)
       {
@@ -303,7 +305,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnDevice(Device device, uint id)
+    private void OnDevice(Device device, uint id, IntPtr context)
     {
       _devices.AddOrUpdate(id, device);
 
@@ -314,7 +316,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnLostDevice(string sn)
+    private void OnLostDevice(string sn, IntPtr context)
     {
       KeyValuePair<uint, Device>? lost = _devices.FindDeviceBySerialNumber(sn);
       if (lost != null)
@@ -330,7 +332,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnFailedDevice(LEAP_DEVICE_FAILURE_EVENT deviceMsg)
+    private void OnFailedDevice(LEAP_DEVICE_FAILURE_EVENT deviceMsg, IntPtr context)
     {
       string failureMessage;
       string failedSerialNumber = "Unavailable";
@@ -371,7 +373,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnConfigChange(ref LEAP_CONFIG_CHANGE_EVENT configEvent)
+    private void OnConfigChange(ref LEAP_CONFIG_CHANGE_EVENT configEvent, IntPtr context)
     {
       string config_key = "";
       _configRequests.TryGetValue(configEvent.requestId, out config_key);
@@ -385,7 +387,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnConfigResponse(ref LEAP_CONNECTION_MESSAGE configMsg)
+    private void OnConfigResponse(ref LEAP_CONNECTION_MESSAGE configMsg, IntPtr context)
     {
       LEAP_CONFIG_RESPONSE_EVENT config_response_evt;
       StructMarshal<LEAP_CONFIG_RESPONSE_EVENT>.PtrToStruct(
@@ -436,7 +438,7 @@ namespace LeapInternal
         LeapConfigResponse.DispatchOnContext(this, EventContext, args);
       }
     }
-    private void OnLogMessage(eLeapLogSeverity severity, long timestamp, string message)
+    private void OnLogMessage(eLeapLogSeverity severity, long timestamp, string message, IntPtr context)
     {
       {
         UnityEngine.Debug.Log("Log message " + message);
@@ -448,15 +450,12 @@ namespace LeapInternal
       }
     }
 
-    private static void OnCalibrationSample(bool status, int sampleCount, string failedDevices)
+    private static void OnCalibrationSample(int deviceCount, uint[] ids, int[] completion, IntPtr context)
     {
-      if (status)
+      for (int i = 0; i < deviceCount; i++)
       {
-        UnityEngine.Debug.Log("" + sampleCount + " samples taken.");
-      }
-      else
-      {
-        UnityEngine.Debug.Log("Failed to take samples. Devices \"" + failedDevices + "\" do not see the hand.");
+
+        Console.WriteLine("Calibration for device " + ids[i] + " has " + completion[i] + " percent completion.");
       }
     }
 
@@ -478,7 +477,7 @@ namespace LeapInternal
     }
 
     private void OnPointMappingChange(
-                 ref LEAP_POINT_MAPPING_CHANGE_EVENT pointMapping)
+                 ref LEAP_POINT_MAPPING_CHANGE_EVENT pointMapping, IntPtr context)
     {
       if (LeapPointMappingChange != null)
       {
@@ -488,7 +487,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnDroppedFrame(ref LEAP_DROPPED_FRAME_EVENT droppedFrame)
+    private void OnDroppedFrame(ref LEAP_DROPPED_FRAME_EVENT droppedFrame, IntPtr context)
     {
       if (LeapDroppedFrame != null)
       {
@@ -497,7 +496,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnHeadPoseChange(ref LEAP_HEAD_POSE_EVENT headPose)
+    private void OnHeadPoseChange(ref LEAP_HEAD_POSE_EVENT headPose, IntPtr context)
     {
       if (LeapHeadPoseChange != null)
       {
@@ -529,7 +528,7 @@ namespace LeapInternal
       return distortionData;
     }
 
-    private void OnImage(ref LEAP_IMAGE_EVENT imageMsg, UInt32 deviceID)
+    private void OnImage(ref LEAP_IMAGE_EVENT imageMsg, UInt32 deviceID, IntPtr context)
     {
       if (LeapImage != null)
       {
@@ -563,7 +562,7 @@ namespace LeapInternal
       }
     }
 
-    private void OnPolicyChange(ref LEAP_POLICY_EVENT policyMsg)
+    private void OnPolicyChange(ref LEAP_POLICY_EVENT policyMsg, IntPtr context)
     {
       if (LeapPolicyChange != null)
       {
