@@ -180,10 +180,12 @@ namespace Leap {
   /// @since 3.0
   /// </summary>
   public class DeviceEventArgs : LeapEventArgs {
-    public DeviceEventArgs(Device device) : base(LeapEvent.EVENT_DEVICE) {
+    public DeviceEventArgs(Device device, uint id) : base(LeapEvent.EVENT_DEVICE) {
       this.Device = device;
+      this.Id = id;
     }
     public Device Device { get; set; }
+    public uint Id { get; set; }
   }
 
   /// <summary>

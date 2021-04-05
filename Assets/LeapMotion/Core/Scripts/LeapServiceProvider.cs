@@ -440,14 +440,7 @@ namespace Leap.Unity
     {
       if (_leapController != null)
       {
-        if (isPaused)
-        {
-          _leapController.StopConnection();
-        }
-        else
-        {
-          _leapController.StartConnection();
-        }
+
       }
     }
 
@@ -568,28 +561,23 @@ namespace Leap.Unity
         return;
       }
 
-      //TODO device ID
-      _leapController = new Controller(1,
-        _multipleDeviceMode != MultipleDeviceMode.Disabled);
-      _leapController.Device += (s, e) => {
+      _leapController = new Controller(_specificSerialNumber.GetHashCode(), _specificSerialNumber);
+      
+      _leapController.Device += (s, e) =>
+      {
         if (_onDeviceSafe != null)
         {
           _onDeviceSafe(e.Device);
         }
-      };
 
-      /*_onDeviceSafe += (d) =>
-      {
-        int DeviceID = 0;
-        _numDevicesSeen++;
-        if ((int.TryParse(_specificSerialNumber, out DeviceID) &&
-            _numDevicesSeen == (uint)DeviceID) ||
-           (_specificSerialNumber.Length > 1 &&
-            d.SerialNumber.Contains(_specificSerialNumber)))
+        /*if (_leapController.DeviceId == e.Id)
         {
-          //_leapController.SubscribeToDeviceEvents(d);
-        }
-      };*/
+          LeapTransform trans = _leapController.GetTransform(_leapController.DeviceId);
+          this.transform.rotation = new Quaternion(trans.rotation.x, trans.rotation.y, trans.rotation.z, trans.rotation.w);
+          this.transform.position = new Vector3(trans.translation.x, trans.translation.y, trans.translation.z);
+        }*/
+
+      };
 
       if (_leapController.IsConnected)
       {

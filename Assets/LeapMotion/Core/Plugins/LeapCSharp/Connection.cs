@@ -19,40 +19,26 @@ namespace LeapInternal
 
   public class Connection
   {
-    private static Dictionary<int, Connection> connectionDictionary =
-      new Dictionary<int, Connection>();
 
-    //Left-right precalculated offsets
-    private static long _handIdOffset;
-    private static long _handPositionOffset;
-    private static long _handOrientationOffset;
+    static Connection connection = null;
 
     Wrapper wrapper;
 
     static Connection()
     {
-      _handIdOffset = Marshal.OffsetOf(typeof(LEAP_HAND), "id").ToInt64();
-
-      long palmOffset = Marshal.OffsetOf(typeof(LEAP_HAND), "palm").ToInt64();
-      _handPositionOffset = Marshal.OffsetOf(typeof(LEAP_PALM), "position")
-        .ToInt64() + palmOffset;
-      _handOrientationOffset = Marshal.OffsetOf(typeof(LEAP_PALM), "orientation")
-        .ToInt64() + palmOffset;
     }
 
-    public static Connection GetConnection(int connectionKey = 0)
+    public static Connection GetConnection()
     {
-      Connection conn;
-      if (!connectionDictionary.TryGetValue(connectionKey, out conn))
+      if (connection == null)
       {
-        conn = new Connection(connectionKey);
-        connectionDictionary.Add(connectionKey, conn);
+        connection = new Connection();
+        connection.Start();
       }
-      return conn;
+      return connection;
     }
 
-    public int ConnectionKey { get; private set; }
-    public CircularObjectBuffer<LEAP_TRACKING_EVENT> Frames { get; set; }
+    public CircularObjectBuffer<Frame> Frames { get; set; }
 
     private DeviceList _devices = new DeviceList();
     private FailedDeviceList _failedDevices;
@@ -63,7 +49,6 @@ namespace LeapInternal
                                          //currently hardcoded!
 
     private bool _isRunning = false;
-    private Thread _polster;
 
     //Policy and enabled features
     private UInt64 _requestedPolicies = 0;
@@ -149,30 +134,20 @@ namespace LeapInternal
       Dispose(false);
     }
 
-    private Connection(int connectionKey)
+    private Connection()
     {
-      ConnectionKey = connectionKey;
-
-
-      Frames = new CircularObjectBuffer<LEAP_TRACKING_EVENT>(_frameBufferLength);
+      Frames = new CircularObjectBuffer<Frame>(_frameBufferLength);
+      IntPtr context = new IntPtr(256);
+      wrapper = new Wrapper(handleConnection, handleConnectionLost, handleDevice, handleLostDevice,
+          handleFailedDevice, handleTrackingMessage, reportLogMessage, OnCalibrationSample, context);
     }
 
     public void Start()
     {
       if (_isRunning)
         return;
-      IntPtr context = new IntPtr(256);
-      wrapper = new Wrapper(OnCalibrationSample, context);
-      connected = true;
-      // The Allocator must persist the lifetime of the connection
-
       _isRunning = true;
-      AppDomain.CurrentDomain.DomainUnload += (arg1, arg2) => Dispose(true);
 
-      _polster = new Thread(new ThreadStart(this.processMessages));
-      _polster.Name = "LeapC Worker";
-      _polster.IsBackground = true;
-      _polster.Start();
     }
 
     public void Stop()
@@ -181,198 +156,52 @@ namespace LeapInternal
         return;
 
       _isRunning = false;
-
       wrapper.Dispose();
-
-      _polster.Join();
     }
 
-    //Run in Polster thread, fills in object queues
-    private void processMessages()
+
+    private void handleTrackingMessage(Frame frame, IntPtr context)
     {
-      //Only profiling block currently is the Handle Event block
-      const string HANDLE_EVENT_PROFILER_BLOCK = "Handle Event";
-      bool hasBegunProfilingForThread = false;
+      Frames.Put(ref frame);
 
-      try
+      for (int h = 0; h < frame.Hands.Count; h++)
       {
-        eLeapRS result;
-        _leapInit.DispatchOnContext(this, EventContext,
-          new LeapEventArgs(LeapEvent.EVENT_INIT));
-        while (_isRunning)
-        {
-          if (LeapBeginProfilingForThread != null && !hasBegunProfilingForThread)
-          {
-            LeapBeginProfilingForThread(new BeginProfilingForThreadArgs(
-              "Worker Thread",
-              HANDLE_EVENT_PROFILER_BLOCK));
-            hasBegunProfilingForThread = true;
-          }
-
-          LEAP_CONNECTION_MESSAGE _msg = new LEAP_CONNECTION_MESSAGE();
-          uint timeout = 1000;
-          result = wrapper.PollLeapMotionMessages(ref _msg, timeout);
-
-          if (result != eLeapRS.eLeapRS_Success)
-          {
-            reportAbnormalResults("LeapC PollConnection call was ", result);
-            continue;
-          }
-
-          if (LeapBeginProfilingBlock != null && hasBegunProfilingForThread)
-          {
-            LeapBeginProfilingBlock(new BeginProfilingBlockArgs(
-              HANDLE_EVENT_PROFILER_BLOCK));
-          }
-
-          switch (_msg.type)
-          {
-            case eLeapEventType.eLeapEventType_None:
-              break;
-
-            case eLeapEventType.eLeapEventType_Connection:
-              LEAP_CONNECTION_EVENT connection_evt;
-              StructMarshal<LEAP_CONNECTION_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out connection_evt);
-              handleConnection(ref connection_evt);
-              break;
-            case eLeapEventType.eLeapEventType_ConnectionLost:
-              LEAP_CONNECTION_LOST_EVENT connection_lost_evt;
-              StructMarshal<LEAP_CONNECTION_LOST_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out connection_lost_evt);
-              handleConnectionLost(ref connection_lost_evt);
-              break;
-
-            case eLeapEventType.eLeapEventType_Device:
-              LEAP_DEVICE_EVENT device_evt;
-              StructMarshal<LEAP_DEVICE_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out device_evt);
-              handleDevice(ref device_evt);
-              break;
-
-            // Note that unplugging a device generates an eLeapEventType_DeviceLost event
-            // message, not a failure message. DeviceLost is further down.
-            case eLeapEventType.eLeapEventType_DeviceFailure:
-              LEAP_DEVICE_FAILURE_EVENT device_failure_evt;
-              StructMarshal<LEAP_DEVICE_FAILURE_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out device_failure_evt);
-              handleFailedDevice(ref device_failure_evt);
-              break;
-
-            /*case eLeapEventType.eLeapEventType_Policy:
-              LEAP_POLICY_EVENT policy_evt;
-              StructMarshal<LEAP_POLICY_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out policy_evt);
-              handlePolicyChange(ref policy_evt);
-              break;*/
-
-            case eLeapEventType.eLeapEventType_Tracking:
-              LEAP_TRACKING_EVENT tracking_evt;
-              StructMarshal<LEAP_TRACKING_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out tracking_evt);
-
-              handleTrackingMessage(ref tracking_evt, _msg.deviceID);
-              break;
-            case eLeapEventType.eLeapEventType_LogEvent:
-              LEAP_LOG_EVENT log_evt;
-              StructMarshal<LEAP_LOG_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out log_evt);
-              reportLogMessage(ref log_evt);
-              break;
-            case eLeapEventType.eLeapEventType_DeviceLost:
-              LEAP_DEVICE_EVENT device_lost_evt;
-              StructMarshal<LEAP_DEVICE_EVENT>.PtrToStruct(
-                _msg.eventStructPtr, out device_lost_evt);
-              handleLostDevice(ref device_lost_evt);
-              break;
-              /*case eLeapEventType.eLeapEventType_ConfigChange:
-                LEAP_CONFIG_CHANGE_EVENT config_change_evt;
-                StructMarshal<LEAP_CONFIG_CHANGE_EVENT>.PtrToStruct(
-                  _msg.eventStructPtr, out config_change_evt);
-                handleConfigChange(ref config_change_evt);
-                break;
-              case eLeapEventType.eLeapEventType_ConfigResponse:
-                handleConfigResponse(ref _msg);
-                break;
-              case eLeapEventType.eLeapEventType_DroppedFrame:
-                LEAP_DROPPED_FRAME_EVENT dropped_frame_evt;
-                StructMarshal<LEAP_DROPPED_FRAME_EVENT>.PtrToStruct(
-                  _msg.eventStructPtr, out dropped_frame_evt);
-                handleDroppedFrame(ref dropped_frame_evt);
-                break;
-              case eLeapEventType.eLeapEventType_Image:
-                LEAP_IMAGE_EVENT image_evt;
-                StructMarshal<LEAP_IMAGE_EVENT>.PtrToStruct(
-                  _msg.eventStructPtr, out image_evt);
-                handleImage(ref image_evt, _msg.deviceID);
-                break;
-              case eLeapEventType.eLeapEventType_PointMappingChange:
-                LEAP_POINT_MAPPING_CHANGE_EVENT point_mapping_change_evt;
-                StructMarshal<LEAP_POINT_MAPPING_CHANGE_EVENT>.PtrToStruct(
-                  _msg.eventStructPtr, out point_mapping_change_evt);
-                handlePointMappingChange(ref point_mapping_change_evt);
-                break;
-              case eLeapEventType.eLeapEventType_HeadPose:
-                LEAP_HEAD_POSE_EVENT head_pose_event;
-                StructMarshal<LEAP_HEAD_POSE_EVENT>.PtrToStruct(
-                  _msg.eventStructPtr, out head_pose_event);
-                handleHeadPoseChange(ref head_pose_event);
-                break;*/
-          } //switch on _msg.type
-
-          if (LeapEndProfilingBlock != null && hasBegunProfilingForThread)
-          {
-            LeapEndProfilingBlock(new EndProfilingBlockArgs(
-              HANDLE_EVENT_PROFILER_BLOCK));
-          }
-        } //while running
+        UnityEngine.Debug.Log("    Hand id " + frame.Hands[h].Id + " from device " + frame.DeviceID
+          + " is a " + (frame.Hands[h].IsLeft ? "left" : "right") + " hand with position (" +
+          frame.Hands[h].PalmPosition.x + ", " +
+          frame.Hands[h].PalmPosition.y + ", " +
+          frame.Hands[h].PalmPosition.z + ")" +
+          " and confidence " + frame.Hands[h].Confidence +
+          " for context " + context.ToInt32() + ".");
       }
-      catch (Exception e)
-      {
-        Logger.Log("Exception: " + e);
-        _isRunning = false;
-      }
-      finally
-      {
-        if (LeapEndProfilingForThread != null && hasBegunProfilingForThread)
-        {
-          LeapEndProfilingForThread(new EndProfilingForThreadArgs());
-        }
-      }
-    }
-
-    private void handleTrackingMessage(ref LEAP_TRACKING_EVENT trackingMsg,
-                                       UInt32 deviceID)
-    {
-      Frames.Put(ref trackingMsg);
 
       if (LeapFrame != null)
       {
         LeapFrame.DispatchOnContext(this, EventContext, new FrameEventArgs(
-          new Frame(deviceID).CopyFrom(ref trackingMsg)));
+          frame));
       }
     }
 
-    public long GetInterpolatedFrameSize(Int64 time)
+    public long GetInterpolatedFrameSize(uint DeviceId, Int64 time)
     {
-      return wrapper.GetInterpolatedFrameSize((uint)ConnectionKey, time);
+      return wrapper.GetInterpolatedFrameSize(DeviceId, time);
     }
 
-    public void GetInterpolatedFrame(Frame toFill, Int64 time)
+    public void GetInterpolatedFrame(uint DeviceId, Frame toFill, Int64 time)
     {
-      toFill.CopyFrom(wrapper.GetInterpolatedFrame((uint)ConnectionKey, time));
+      toFill.CopyFrom(wrapper.GetInterpolatedFrame(DeviceId, time));
     }
 
-    public void GetInterpolatedFrameFromTime(Frame toFill, Int64 time,
+    public void GetInterpolatedFrameFromTime(uint DeviceId, Frame toFill, Int64 time,
                                              Int64 sourceTime)
     {
-      toFill.CopyFrom(wrapper.GetInterpolatedFrameFromTime((uint)ConnectionKey, time, sourceTime));
+      toFill.CopyFrom(wrapper.GetInterpolatedFrameFromTime(DeviceId, time, sourceTime));
     }
 
-    public Frame GetInterpolatedFrame(Int64 time)
+    public Frame GetInterpolatedFrame(uint DeviceId, Int64 time)
     {
       Frame frame = new Frame();
-      GetInterpolatedFrame(frame, time);
+      GetInterpolatedFrame(DeviceId, frame, time);
       return frame;
     }
 
@@ -464,8 +293,9 @@ namespace LeapInternal
       Marshal.FreeHGlobal(trackingBuffer);*/
     }
 
-    private void handleConnection(ref LEAP_CONNECTION_EVENT connectionMsg)
+    private void handleConnection(IntPtr context)
     {
+      connected = true;
       if (_leapConnectionEvent != null)
       {
         _leapConnectionEvent.DispatchOnContext(this, EventContext,
@@ -473,7 +303,7 @@ namespace LeapInternal
       }
     }
 
-    private void handleConnectionLost(ref LEAP_CONNECTION_LOST_EVENT connectionMsg)
+    private void handleConnectionLost(IntPtr context)
     {
       if (LeapConnectionLost != null)
       {
@@ -482,21 +312,19 @@ namespace LeapInternal
       }
     }
 
-    private void handleDevice(ref LEAP_DEVICE_EVENT deviceMsg)
+    private void handleDevice(Device device, uint id, IntPtr context)
     {
-      Device apiDevice = new Device();
-      wrapper.GetDevice(deviceMsg.device.id, ref apiDevice);
-
+      _devices.AddOrUpdate(device);
       if (LeapDevice != null)
       {
         LeapDevice.DispatchOnContext(this, EventContext,
-          new DeviceEventArgs(apiDevice));
+          new DeviceEventArgs(device, id));
       }
     }
 
-    private void handleLostDevice(ref LEAP_DEVICE_EVENT deviceMsg)
+    private void handleLostDevice(string sn, IntPtr context)
     {
-      Device lost = _devices.FindDeviceByHandle(deviceMsg.device.connectionHandle);
+      Device lost = _devices.FindDeviceBySN(sn);
       if (lost != null)
       {
         _devices.Remove(lost);
@@ -505,12 +333,12 @@ namespace LeapInternal
         if (LeapDeviceLost != null)
         {
           LeapDeviceLost.DispatchOnContext(this, EventContext,
-            new DeviceEventArgs(lost));
+            new DeviceEventArgs(lost,0));
         }
       }
     }
 
-    private void handleFailedDevice(ref LEAP_DEVICE_FAILURE_EVENT deviceMsg)
+    private void handleFailedDevice(LEAP_DEVICE_FAILURE_EVENT deviceMsg, IntPtr context)
     {
       string failureMessage;
       string failedSerialNumber = "Unavailable";
@@ -617,13 +445,13 @@ namespace LeapInternal
       }
     }
 
-    private void reportLogMessage(ref LEAP_LOG_EVENT logMsg)
+    private void reportLogMessage(eLeapLogSeverity severity, long timestamp, string message, IntPtr context)
     {
       if (LeapLogEvent != null)
       {
         LeapLogEvent.DispatchOnContext(this, EventContext, new LogEventArgs(
-          publicSeverity(logMsg.severity), logMsg.timestamp,
-          Marshal.PtrToStringAnsi(logMsg.message)));
+          publicSeverity(severity), timestamp,
+         message));
       }
     }
 
@@ -1056,6 +884,17 @@ namespace LeapInternal
     public long Now()
     {
       return wrapper.GetLeapNow();
+    }
+
+    public LeapTransform GetTransform(uint id)
+    {
+      Vector3f translation;
+      Quaternionf rotation;
+      wrapper.GetDeviceTransformationRaw(id, out translation, out rotation);
+      LeapTransform trans = new LeapTransform();
+      trans.translation = new Vector(-translation.x / 1000, translation.y / 10000, translation.z / 10000);
+      trans.rotation = new LeapQuaternion(rotation.x, rotation.z, -rotation.z, rotation.w);
+      return trans;
     }
 
     private static void OnCalibrationSample(int deviceCount, uint[] ids, int[] completion, IntPtr context)

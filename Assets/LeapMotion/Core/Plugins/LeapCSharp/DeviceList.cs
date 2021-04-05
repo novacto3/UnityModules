@@ -38,6 +38,19 @@ namespace Leap {
     }
 
     /// <summary>
+    /// For internal use only.
+    /// </summary>
+    public Device FindDeviceBySN(string serialNumber)
+    {
+      for (int d = 0; d < this.Count; d++)
+      {
+        if (this[d].SerialNumber == serialNumber)
+          return this[d];
+      }
+      return null;
+    }
+
+    /// <summary>
     /// The device that is currently streaming tracking data.
     /// If no streaming devices are found, returns null
     /// </summary>

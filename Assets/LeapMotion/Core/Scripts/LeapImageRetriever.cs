@@ -206,7 +206,7 @@ namespace Leap.Unity {
     }
 
     private void initializeDeviceHandles() {
-      var connection = Connection.GetConnection(0);
+      var connection = Connection.GetConnection();
       for (int i = 0; i < connection.Devices.Count; i++) {
         bool containsHandle = _deviceHandles.ContainsValue(connection.Devices[i].Handle);
         bool containsKey = _deviceHandles.ContainsKey(i + 1);

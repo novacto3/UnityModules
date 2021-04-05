@@ -40,8 +40,9 @@ namespace Leap {
     IController {
     Connection _connection;
     bool _disposed = false;
-    bool _supportsMultipleDevices = true;
     Config _config;
+    public uint DeviceId { get; set; } = 0;
+    public string DeviceSN { get; set; } = null;
 
     /// <summary>
     /// The SynchronizationContext used for dispatching events.
@@ -144,11 +145,11 @@ namespace Leap {
       }
     }
 
-    /// <summary>
-    /// Dispatched when a Leap Motion device is disconnected.
-    /// @since 3.0
-    /// </summary>
-    public event EventHandler<DeviceEventArgs> DeviceLost {
+  /// <summary>
+  /// Dispatched when a Leap Motion device is disconnected.
+  /// @since 3.0
+  /// </summary>
+  public event EventHandler<DeviceEventArgs> DeviceLost {
       add {
         _connection.LeapDeviceLost += value;
       }
@@ -355,38 +356,36 @@ namespace Leap {
       _disposed = true;
     }
 
-    /// <summary>
-    /// Constructs a Controller object.
-    /// 
-    /// The default constructor uses a connection key of 0.
-    /// 
-    /// @since 1.0
-    /// </summary>
-    public Controller(bool supportsMultipleDevices = true) : this(0) { }
+    public Controller()
+    {
+    }
 
-    /// <summary>
-    /// Constructs a Controller object using the specified connection key.
-    /// 
-    /// All controller instances using the same key will use the same connection
-    /// to the service. In general, an application should not use more than one connection
-    /// for all its controllers. Each connection keeps its own cache of frames and images.
-    /// 
-    /// @param connectionKey An identifier specifying the connection to use. If a
-    /// connection with the specified key already exists, that connection is used.
-    /// Otherwise, a new connection is created.
-    /// @since 3.0
-    /// </summary>
-    public Controller(int connectionKey, bool supportsMultipleDevices = true) {
-      _connection = Connection.GetConnection(connectionKey);
+      /// <summary>
+      /// Constructs a Controller object using the specified connection key.
+      /// 
+      /// All controller instances using the same key will use the same connection
+      /// to the service. In general, an application should not use more than one connection
+      /// for all its controllers. Each connection keeps its own cache of frames and images.
+      /// 
+      /// @param connectionKey An identifier specifying the connection to use. If a
+      /// connection with the specified key already exists, that connection is used.
+      /// Otherwise, a new connection is created.
+      /// @since 3.0
+      /// </summary>
+      public Controller(int connectionKey, string _specificSerialNumber) {
+      _connection = Connection.GetConnection();
       _connection.EventContext = SynchronizationContext.Current;
 
       _connection.LeapInit += OnInit;
       _connection.LeapConnection += OnConnect;
       _connection.LeapConnectionLost += OnDisconnect;
-
-      _supportsMultipleDevices = supportsMultipleDevices;
-
-      _connection.Start();
+      uint DeviceID;
+      if (uint.TryParse(_specificSerialNumber, out DeviceID)) {
+        DeviceId = DeviceID;
+      } else if (_specificSerialNumber.Length > 1)
+      {
+        DeviceSN = _specificSerialNumber;
+      }
     }
 
     /// <summary>
@@ -502,9 +501,9 @@ namespace Leap {
     /// it, the user provides a frame object to be filled with data instead.
     /// </summary>
     public void Frame(Frame toFill, int history = 0) {
-      LEAP_TRACKING_EVENT trackingEvent;
-      _connection.Frames.Get(out trackingEvent, history);
-      toFill.CopyFrom(ref trackingEvent);
+      Frame frame;
+      _connection.Frames.Get(out frame, history);
+      toFill.CopyFrom(frame);
     }
 
     /// <summary>
@@ -515,9 +514,9 @@ namespace Leap {
     /// tracked frame.
     /// </summary>
     public long FrameTimestamp(int history = 0) {
-      LEAP_TRACKING_EVENT trackingEvent;
-      _connection.Frames.Get(out trackingEvent, history);
-      return trackingEvent.info.timestamp;
+      Frame frame;
+      _connection.Frames.Get(out frame, history);
+      return frame.Timestamp;
     }
 
     /// <summary>
@@ -532,14 +531,14 @@ namespace Leap {
     /// Returns the Frame at the specified time, interpolating the data between existing frames, if necessary.
     /// </summary>
     public Frame GetInterpolatedFrame(Int64 time) {
-      return _connection.GetInterpolatedFrame(time);
+      return _connection.GetInterpolatedFrame(DeviceId, time);
     }
 
     /// <summary>
     /// Fills the Frame with data taken at the specified time, interpolating the data between existing frames, if necessary.
     /// </summary>
     public void GetInterpolatedFrame(Frame toFill, Int64 time) {
-      _connection.GetInterpolatedFrame(toFill, time);
+      _connection.GetInterpolatedFrame(DeviceId, toFill, time);
     }
 
     /// <summary>
@@ -595,7 +594,7 @@ namespace Leap {
     }
 
     public void GetInterpolatedFrameFromTime(Frame toFill, Int64 time, Int64 sourceTime) {
-      _connection.GetInterpolatedFrameFromTime(toFill, time, sourceTime);
+      _connection.GetInterpolatedFrameFromTime(DeviceId, toFill, time, sourceTime);
     }
 
     /// <summary>
@@ -638,7 +637,7 @@ namespace Leap {
     public Config Config {
       get {
         if (_config == null)
-          _config = new Config(this._connection.ConnectionKey);
+          _config = new Config(0);
         return _config;
       }
     }
@@ -739,6 +738,11 @@ namespace Leap {
     protected virtual void OnDisconnect(object sender, ConnectionLostEventArgs eventArgs) {
       _hasInitialized = false;
       _hasConnected = false;
+    }
+
+    public LeapTransform GetTransform(uint id)
+    {
+      return _connection.GetTransform(id);
     }
   }
 }

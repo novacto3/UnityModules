@@ -29,7 +29,7 @@ namespace Leap {
     /// @since 3.0
     /// </summary>
     public Config(int connectionKey) {
-      _connection = Connection.GetConnection(connectionKey);
+      _connection = Connection.GetConnection();
       _connection.LeapConfigChange += handleConfigChange;
       _connection.LeapConfigResponse += handleConfigResponse;
     }
