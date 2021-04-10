@@ -31,6 +31,16 @@ namespace Leap.Unity {
 
     // Update is called once per frame
     void Update() {
+      for (int i = 0; i < devices.Length; i++)
+      {
+        Hand hand = devices[i].deviceProvider.CurrentFrame.Get(Chirality.Left);
+        if (hand != null)
+        {
+          Debug.Log
+           ("    Hand id " + hand.Id + " from device " + (i + 1) + " with position (" + hand.PalmPosition.x / 100f + "," +
+           hand.PalmPosition.y / 100f + "," + hand.PalmPosition.z / 100f + ").");
+        }
+      }
       if (devices.Length > 1) {
         // Add the set of joints to device-specific lists
         if (autoSamplingEnabled) {
