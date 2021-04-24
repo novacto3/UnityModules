@@ -34,6 +34,7 @@ namespace LeapInternal
       {
         connection = new Connection();
         connection.Start();
+        //connection.SetMerged(true);
       }
       return connection;
     }
@@ -54,6 +55,7 @@ namespace LeapInternal
     private UInt64 _requestedPolicies = 0;
     private UInt64 _activePolicies = 0;
     private bool connected = false;
+    public bool IsMerged = false;
 
     //Config change status
     private Dictionary<uint, string> _configRequests =
@@ -147,14 +149,13 @@ namespace LeapInternal
       if (_isRunning)
         return;
       _isRunning = true;
-
     }
 
     public void Stop()
     {
       if (!_isRunning)
         return;
-
+      IsMerged = false;
       _isRunning = false;
       wrapper.Dispose();
     }
@@ -163,17 +164,6 @@ namespace LeapInternal
     private void handleTrackingMessage(Frame frame, IntPtr context)
     {
       Frames.Put(ref frame);
-
-      for (int h = 0; h < frame.Hands.Count; h++)
-      {
-        UnityEngine.Debug.Log("    Hand id " + frame.Hands[h].Id + " from device " + frame.DeviceID
-          + " is a " + (frame.Hands[h].IsLeft ? "left" : "right") + " hand with position (" +
-          frame.Hands[h].PalmPosition.x + ", " +
-          frame.Hands[h].PalmPosition.y + ", " +
-          frame.Hands[h].PalmPosition.z + ")" +
-          " and confidence " + frame.Hands[h].Confidence +
-          " for context " + context.ToInt32() + ".");
-      }
 
       if (LeapFrame != null)
       {
@@ -892,9 +882,15 @@ namespace LeapInternal
       Quaternionf rotation;
       wrapper.GetDeviceTransformationRaw(id, out translation, out rotation);
       LeapTransform trans = new LeapTransform();
-      trans.translation = new Vector(-translation.x / 1000, translation.y / 10000, translation.z / 10000);
+      trans.translation = new Vector(-translation.x / 1000, translation.y / 1000, translation.z / 1000);
       trans.rotation = new LeapQuaternion(rotation.x, rotation.z, -rotation.z, rotation.w);
       return trans;
+    }
+
+    public void SetMerged(bool merged)
+    {
+      IsMerged = merged;
+      wrapper.MergeHands(merged);
     }
 
     private static void OnCalibrationSample(int deviceCount, uint[] ids, int[] completion, IntPtr context)

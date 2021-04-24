@@ -22,6 +22,12 @@ namespace Leap.Unity
   public class LeapServiceProvider : LeapProvider
   {
 
+    static bool merged = false;
+
+    public KeyCode changeMergeHandsKey;
+
+
+
     #region Constants
 
     /// <summary>
@@ -334,6 +340,15 @@ namespace Leap.Unity
 
     protected virtual void Update()
     {
+      if (Input.GetKeyUp(changeMergeHandsKey))
+      {
+        SetMerged();
+      }
+
+      if (!_leapController.CanUpdate)
+      {
+        return;
+      }
       if (_workerThreadProfiling)
       {
         LeapProfiling.Update();
@@ -385,6 +400,10 @@ namespace Leap.Unity
 
     protected virtual void FixedUpdate()
     {
+      if (!_leapController.CanUpdate)
+      {
+        return;
+      }
       if (_frameOptimization == FrameOptimizationMode.ReuseUpdateForPhysics)
       {
         DispatchFixedFrameEvent(_transformedUpdateFrame);
@@ -667,6 +686,12 @@ namespace Leap.Unity
     protected virtual void transformFrame(Frame source, Frame dest)
     {
       dest.CopyFrom(source).Transform(transform.GetLeapMatrix());
+    }
+
+    private void SetMerged()
+    {
+      merged = !merged;
+      _leapController.SetMerged(merged);
     }
 
     #endregion

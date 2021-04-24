@@ -423,6 +423,13 @@ namespace Leap {
       }
     }
 
+    public bool CanUpdate
+    {
+      get {
+        return _connection.IsServiceConnected && (DeviceId == 42 && _connection.IsMerged) || (DeviceId != 42 && !_connection.IsMerged);
+      }
+    }
+
     /// <summary>
     /// Requests setting a policy.
     ///  
@@ -743,6 +750,11 @@ namespace Leap {
     public LeapTransform GetTransform(uint id)
     {
       return _connection.GetTransform(id);
+    }
+
+    public void SetMerged(bool merged)
+    {
+      _connection.SetMerged(merged);
     }
   }
 }
